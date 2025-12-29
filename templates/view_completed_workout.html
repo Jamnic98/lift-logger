@@ -12,7 +12,7 @@
                 <tr>
                     <th>Exercise</th>
                     <th>Category</th>
-                    <th>Weight (kg)</th>
+                    <th>Load</th>
                     <th>Reps</th>
                     <th>Sets</th>
                     <th>Rest (s)</th>
@@ -24,7 +24,13 @@
                     <tr>
                         <td>{{ exercise_labels[row.exercise] }}</td>
                         <td>{{ category_labels[row.category] }}</td>
-                        <td>{{ row.weight_kg }}</td>
+                        <td>
+                          {% if EXERCISES[row.exercise].weight_type == 'load' %}
+                            {{ row.load }}
+                          {% else %}
+                            {{ row.duration_sec }}
+                          {% endif %}
+                        </td>
                         <td>{{ row.reps }}</td>
                         <td>{{ row.sets }}</td>
                         <td>{{ row.rest_sec }}</td>

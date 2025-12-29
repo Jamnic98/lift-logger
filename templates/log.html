@@ -4,6 +4,7 @@
     <title>Build Workout</title>
     <style>
         .exercise-row { margin-bottom: 10px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -14,10 +15,12 @@
             <tr>
                 <th>Category</th>
                 <th>Exercise</th>
-                <th>Weight (kg)</th>
+                <th id="th-load">Load</th>
+                <th id="th-band">Band</th>
                 <th>Reps</th>
                 <th>Sets</th>
                 <th>Rest (s)</th>
+                <th id="th-duration">Duration (s)</th>
                 <th></th>
             </tr>
         </thead>
@@ -31,12 +34,22 @@
                     </select>
                 </td>
                 <td>
-                    <select id="exercise"></select>
+                    <select id="exercise" onchange="updateExerciseInputs()"></select>
                 </td>
-                <td><input id="weight" type="number" step="0.5" value=""></td>
+                <td id="td-load"><input id="load" type="number" step="0.5" value="0"></td>
+                <td id="td-band">
+                    <select id="band_level">
+                        <option value="">Select band</option>
+                        <option value="light">Light</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                        <option value="extra_hard">Extra Hard</option>
+                    </select>
+                </td>
                 <td><input id="reps" type="number" value="8"></td>
                 <td><input id="sets" type="number" value="3"></td>
                 <td><input id="rest_sec" type="number" value="30"></td>
+                <td id="td-duration"><input id="duration_sec" type="number" value="0"></td>
                 <td><button type="button" onclick="addExercise()">Add</button></td>
             </tr>
         </tbody>
@@ -57,54 +70,171 @@
     <a href="/">Home</a>
 
     <script>
-    const categories = {{ categories | tojson }};
-    const exerciseLabels = {{ exercise_labels | tojson }};
-    const categorySelect = document.getElementById('category');
-    const exerciseSelect = document.getElementById('exercise');
-    const workoutListDiv = document.getElementById('workout-list');
+        const categories = {{ categories | tojson }};
+        const exerciseLabels = {{ exercise_labels | tojson }};
+        const EXERCISES_META = {{ EXERCISES | tojson }};
 
-    function updateExercises() {
-        const selectedCategory = categorySelect.value;
-        exerciseSelect.innerHTML = '';
-        categories[selectedCategory].forEach(exKey => {
-            const opt = document.createElement('option');
-            opt.value = exKey;
-            opt.innerText = exerciseLabels[exKey];
-            exerciseSelect.appendChild(opt);
-        });
-    }
+        const categorySelect = document.getElementById('category');
+        const exerciseSelect = document.getElementById('exercise');
 
-    // Initialise the exercise dropdown on page load
-    updateExercises();
+        const thLoad = document.getElementById('th-load');
+        const tdLoad = document.getElementById('td-load');
+        const loadInput = document.getElementById('load');
 
-    function addExercise() {
-        const exerciseKey = exerciseSelect.value;
-        const exerciseLabel = exerciseLabels[exerciseKey];
-        const weight = document.getElementById('weight').value;
-        const reps = document.getElementById('reps').value;
-        const sets = document.getElementById('sets').value;
-        const rest_sec = document.getElementById('rest_sec').value;
+        const thBand = document.getElementById('th-band');
+        const tdBand = document.getElementById('td-band');
+        const bandSelect = document.getElementById('band_level');
 
-        const div = document.createElement('div');
-        div.className = 'exercise-row';
-        div.innerHTML = `
-            <input type="hidden" name="category" value="${categorySelect.value}">
-            <input type="hidden" name="exercise" value="${exerciseKey}">
-            <input type="hidden" name="weight_kg" value="${weight}">
-            <input type="hidden" name="reps" value="${reps}">
-            <input type="hidden" name="sets" value="${sets}">
-            <input type="hidden" name="rest_sec" value="${rest_sec}">
-            ${exerciseLabel} - ${weight}kg x ${reps} reps, ${sets} sets, Rest: ${rest_sec}s
-            <button type="button" onclick="this.parentElement.remove()">Remove</button>
-        `;
-        workoutListDiv.appendChild(div);
+        const thDuration = document.getElementById('th-duration');
+        const tdDuration = document.getElementById('td-duration');
+        const durationInput = document.getElementById('duration_sec');
 
-        // Reset input fields
-        document.getElementById('weight').value = 0;
-        document.getElementById('reps').value = 0;
-        document.getElementById('sets').value = 1;
-        document.getElementById('rest_sec').value = 30;
-    }
+        const workoutListDiv = document.getElementById('workout-list');
+
+        function updateExercises() {
+            const selectedCategory = categorySelect.value;
+            exerciseSelect.innerHTML = '';
+            categories[selectedCategory].forEach(exKey => {
+                const opt = document.createElement('option');
+                opt.value = exKey;
+                opt.innerText = exerciseLabels[exKey];
+                exerciseSelect.appendChild(opt);
+            });
+            updateExerciseInputs();
+        }
+
+        function updateExerciseInputs() {
+            const exKey = exerciseSelect.value;
+            const exMeta = EXERCISES_META[exKey];
+            const exerciseCell = exerciseSelect.parentElement;
+
+            // Remove old weight type dropdown
+            const oldDropdown = exerciseCell.querySelector('.weight-type-select');
+            if (oldDropdown) oldDropdown.remove();
+
+            let initialWeightType = exMeta.weight_type[0];
+
+            // If multiple weight types, add dropdown
+            if (exMeta.weight_type.length > 1) {
+                const wtSelect = document.createElement('select');
+                wtSelect.className = 'weight-type-select';
+                exMeta.weight_type.forEach(wt => {
+                    const opt = document.createElement('option');
+                    opt.value = wt;
+                    opt.text = wt.charAt(0).toUpperCase() + wt.slice(1).replace('_',' ');
+                    wtSelect.appendChild(opt);
+                });
+                exerciseCell.appendChild(wtSelect);
+                initialWeightType = wtSelect.value;
+                wtSelect.onchange = () => updateColumns(wtSelect.value, exMeta);
+            }
+
+            updateColumns(initialWeightType, exMeta);
+        }
+
+        function updateColumns(weightType, exMeta) {
+            // Hide all optional columns first
+            tdLoad.style.display = 'none';
+            thLoad.style.display = 'none';
+            tdBand.style.display = 'none';
+            thBand.style.display = 'none';
+            tdDuration.style.display = 'none';
+            thDuration.style.display = 'none';
+
+            const repsInput = document.getElementById('reps');
+            const setsInput = document.getElementById('sets');
+            const repsTh = repsInput.parentElement.previousElementSibling; // assumes table header is fixed order
+
+            // Show/hide reps & sets for duration exercises
+            if (exMeta.load_type === 'duration') {
+                repsInput.style.display = 'none';
+                setsInput.style.display = 'none';
+            } else {
+                repsInput.style.display = 'inline-block';
+                setsInput.style.display = 'inline-block';
+            }
+
+            // Show columns based on type
+            if (exMeta.load_type === 'weight') {
+                if (weightType !== 'bodyweight') {
+                    tdLoad.style.display = 'table-cell';
+                    thLoad.style.display = 'table-cell';
+                }
+                if (weightType === 'exercise_band') {
+                    tdBand.style.display = 'table-cell';
+                    thBand.style.display = 'table-cell';
+                }
+            } else if (exMeta.load_type === 'band') {
+                tdBand.style.display = 'table-cell';
+                thBand.style.display = 'table-cell';
+            } else if (exMeta.load_type === 'duration') {
+                tdDuration.style.display = 'table-cell';
+                thDuration.style.display = 'table-cell';
+            }
+        }
+
+
+        function addExercise() {
+            const exerciseKey = exerciseSelect.value;
+            const exerciseLabel = exerciseLabels[exerciseKey];
+            const exMeta = EXERCISES_META[exerciseKey];
+
+            // Weight type
+            const wtSelect = document.querySelector('.weight-type-select');
+            const weightType = wtSelect ? wtSelect.value : exMeta.weight_type[0];
+
+            // Values according to visible columns
+            const load = tdLoad.style.display !== 'none' ? loadInput.value : '';
+            const band = tdBand.style.display !== 'none' ? bandSelect.value : '';
+            const duration = tdDuration.style.display !== 'none' ? durationInput.value : '';
+            const reps = document.getElementById('reps').value;
+            const sets = document.getElementById('sets').value;
+            const rest_sec = document.getElementById('rest_sec').value;
+
+            const div = document.createElement('div');
+            div.className = 'exercise-row';
+
+            // Build display string
+            let displayStr = exerciseLabel;
+            if (weightType && weightType !== 'bodyweight' && load) displayStr += ` - ${load} kg`;
+            if (weightType === 'exercise_band' && band) displayStr += ` - ${band} band`;
+            if (exMeta.load_type === 'duration' && duration) displayStr += ` - ${duration} sec`;
+
+            if (tdLoad.style.display !== 'none' || tdBand.style.display !== 'none') {
+                displayStr += ` x ${reps} reps, ${sets} sets, Rest: ${rest_sec}s`;
+            } else if (exMeta.load_type === 'duration') {
+                displayStr += `, Rest: ${rest_sec}s`;
+            }
+
+
+            div.innerHTML = `
+                <input type="hidden" name="category" value="${categorySelect.value}">
+                <input type="hidden" name="exercise" value="${exerciseKey}">
+                <input type="hidden" name="weight_type" value="${weightType}">
+                <input type="hidden" name="load" value="${load}">
+                <input type="hidden" name="band_level" value="${band}">
+                <input type="hidden" name="duration_sec" value="${duration}">
+                <input type="hidden" name="reps" value="${reps}">
+                <input type="hidden" name="sets" value="${sets}">
+                <input type="hidden" name="rest_sec" value="${rest_sec}">
+                ${displayStr}
+                <button type="button" onclick="this.parentElement.remove()">Remove</button>
+            `;
+
+            workoutListDiv.appendChild(div);
+
+            // Reset
+            loadInput.value = 0;
+            bandSelect.value = '';
+            durationInput.value = 0;
+            document.getElementById('reps').value = 0;
+            document.getElementById('sets').value = 1;
+            document.getElementById('rest_sec').value = 30;
+            if (wtSelect) wtSelect.selectedIndex = 0;
+        }
+
+        // Initialise
+        updateExercises();
     </script>
 </body>
 </html>

@@ -1,285 +1,38 @@
 import os
+import csv
 from collections import defaultdict
 from datetime import date
 import calendar
 
 from fastapi import FastAPI, Request, Form
+from constants import EXERCISES
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-import csv
-from typing import List
+from typing import List, Optional
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
+
+TEMPLATE_HEADERS = ["workout_name", "category", "exercise", "load_type", "load", "band_level", "reps", "sets", "rest_sec", "duration_sec"]
+COMPLETED_HEADERS = ["date", "workout_name", "exercise", "load_type", "load", "band_level", "reps", "sets", "rpe", "rest_sec", "duration_sec"]
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 TEMPLATES_FILE = os.path.join(BASE_DIR, "workout_templates.csv")
 COMPLETED_FILE = os.path.join(BASE_DIR, "completed_sets.csv")
 
-if not os.path.exists(TEMPLATES_FILE):
+# Ensure template file exists with headers
+if not os.path.exists(TEMPLATES_FILE) or os.path.getsize(TEMPLATES_FILE) == 0:
     with open(TEMPLATES_FILE, "w", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(["workout_name","category","exercise","weight_kg","reps","sets","rest_sec"])
-else:
-    # Ensure header is correct if file exists
-    with open(TEMPLATES_FILE, "r", newline="") as f:
-        reader = csv.reader(f)
-        try:
-            header = next(reader)
-        except StopIteration:
-            header = []
+        writer = csv.DictWriter(f, fieldnames=TEMPLATE_HEADERS)
+        writer.writeheader()
 
-    if header != ["workout_name","category","exercise","weight_kg","reps","sets","rest_sec"]:
-        # Rewrite file with correct header
-        with open(TEMPLATES_FILE, "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["workout_name","category","exercise","weight_kg","reps","sets","rest_sec"])
+# Ensure completed file exists with headers
+if not os.path.exists(COMPLETED_FILE) or os.path.getsize(COMPLETED_FILE) == 0:
+    with open(COMPLETED_FILE, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=COMPLETED_HEADERS)
+        writer.writeheader()
 
-EXERCISES = {
-    # Legs
-    "squat": {
-        "label": "Squat",
-        "category": "legs",
-        "weight_type": ["bodyweight", "dumbbell", "barbell"],
-        "primary_muscles": ["quadriceps", "glutes"],
-        "secondary_muscles": ["hamstrings", "calves"]
-    },
-    "goblet_squat": {
-        "label": "Goblet Squat",
-        "category": "legs",
-        "weight_type": ["dumbbell"],
-        "primary_muscles": ["quadriceps", "glutes"],
-        "secondary_muscles": ["hamstrings", "core"]
-    },
-    "lunge": {
-        "label": "Lunge",
-        "category": "legs",
-        "weight_type": ["bodyweight", "dumbbell"],
-        "primary_muscles": ["quadriceps", "glutes"],
-        "secondary_muscles": ["hamstrings"]
-    },
-    "reverse_lunge": {
-        "label": "Reverse Lunge",
-        "category": "legs",
-        "weight_type": ["bodyweight", "dumbbell"],
-        "primary_muscles": ["quadriceps", "glutes"],
-        "secondary_muscles": ["hamstrings"]
-    },
-    "calf_raise": {
-        "label": "Calf Raise",
-        "category": "legs",
-        "weight_type": ["bodyweight", "dumbbell"],
-        "primary_muscles": ["calves"],
-        "secondary_muscles": []
-    },
-    "clamshell": {
-        "label": "Clamshell",
-        "category": "legs",
-        "weight_type": ["exercise_band", "bodyweight"],
-        "primary_muscles": ["glutes"],
-        "secondary_muscles": ["hips"]
-    },
-
-    # Arms
-    "bicep_curl": {
-        "label": "Bicep Curl",
-        "category": "arms",
-        "weight_type": ["dumbbell"],
-        "primary_muscles": ["biceps"],
-        "secondary_muscles": []
-    },
-    "hammer_curl": {
-        "label": "Hammer Curl",
-        "category": "arms",
-        "weight_type": ["dumbbell"],
-        "primary_muscles": ["biceps", "brachialis"],
-        "secondary_muscles": []
-    },
-    "tricep_extension": {
-        "label": "Tricep Extension",
-        "category": "arms",
-        "weight_type": ["dumbbell", "exercise_band"],
-        "primary_muscles": ["triceps"],
-        "secondary_muscles": []
-    },
-    "overhead_tricep_extension": {
-        "label": "Overhead Tricep Extension",
-        "category": "arms",
-        "weight_type": ["dumbbell", "exercise_band"],
-        "primary_muscles": ["triceps"],
-        "secondary_muscles": []
-    },
-    "tricep_kickback": {
-        "label": "Tricep Kickback",
-        "category": "arms",
-        "weight_type": ["dumbbell"],
-        "primary_muscles": ["triceps"],
-        "secondary_muscles": []
-    },
-    "push_up_close_grip": {
-        "label": "Push-Up (Close Grip / Tricep Focus)",
-        "category": "arms",
-        "weight_type": ["bodyweight"],
-        "primary_muscles": ["triceps"],
-        "secondary_muscles": ["chest", "shoulders", "core"]
-    },
-
-    # Back
-    "bent_over_dumbbell_row": {
-        "label": "Bent-Over Dumbbell Row",
-        "category": "back",
-        "weight_type": ["dumbbell"],
-        "primary_muscles": ["lats", "rhomboids"],
-        "secondary_muscles": ["biceps", "rear_delts"]
-    },
-    "single_arm_dumbbell_row": {
-        "label": "Single-Arm Dumbbell Row",
-        "category": "back",
-        "weight_type": ["dumbbell"],
-        "primary_muscles": ["lats", "rhomboids"],
-        "secondary_muscles": ["biceps", "rear_delts"]
-    },
-    "pull_up": {
-        "label": "Pull-Up / Chin-Up",
-        "category": "back",
-        "weight_type": ["bodyweight"],
-        "primary_muscles": ["lats"],
-        "secondary_muscles": ["biceps", "traps"]
-    },
-    "renegade_row": {
-        "label": "Renegade Row",
-        "category": "back",
-        "weight_type": ["dumbbell"],
-        "primary_muscles": ["lats", "rhomboids"],
-        "secondary_muscles": ["biceps", "core", "shoulders"]
-    },
-
-    # Chest
-    "bench_press": {
-        "label": "Bench Press",
-        "category": "chest",
-        "weight_type": ["dumbbell", "barbell"],
-        "primary_muscles": ["chest"],
-        "secondary_muscles": ["triceps", "shoulders"]
-    },
-    "dumbbell_fly": {
-        "label": "Dumbbell Fly",
-        "category": "chest",
-        "weight_type": ["dumbbell"],
-        "primary_muscles": ["chest"],
-        "secondary_muscles": ["shoulders"]
-    },
-    "push_up": {
-        "label": "Push-Up",
-        "category": "chest",
-        "weight_type": ["bodyweight"],
-        "primary_muscles": ["chest"],
-        "secondary_muscles": ["triceps", "shoulders", "core"]
-    },
-    "incline_push_up": {
-        "label": "Incline Push-Up",
-        "category": "chest",
-        "weight_type": ["bodyweight"],
-        "primary_muscles": ["chest"],
-        "secondary_muscles": ["triceps", "shoulders", "core"]
-    },
-    "decline_push_up": {
-        "label": "Decline Push-Up",
-        "category": "chest",
-        "weight_type": ["bodyweight"],
-        "primary_muscles": ["chest"],
-        "secondary_muscles": ["triceps", "shoulders", "core"]
-    },
-
-    # Shoulders
-    "shoulder_press": {
-        "label": "Shoulder Press",
-        "category": "shoulders",
-        "weight_type": ["dumbbell", "barbell"],
-        "primary_muscles": ["deltoids"],
-        "secondary_muscles": ["traps", "triceps"]
-    },
-    "lateral_raise": {
-        "label": "Lateral Raise",
-        "category": "shoulders",
-        "weight_type": ["dumbbell", "exercise_band"],
-        "primary_muscles": ["lateral_delts"],
-        "secondary_muscles": []
-    },
-    "front_raise": {
-        "label": "Front Raise",
-        "category": "shoulders",
-        "weight_type": ["dumbbell", "exercise_band"],
-        "primary_muscles": ["front_delts"],
-        "secondary_muscles": []
-    },
-    "rear_delt_fly": {
-        "label": "Rear Delt Fly",
-        "category": "shoulders",
-        "weight_type": ["dumbbell", "exercise_band"],
-        "primary_muscles": ["rear_delts"],
-        "secondary_muscles": ["traps"]
-    },
-    "arnold_press": {
-        "label": "Arnold Press",
-        "category": "shoulders",
-        "weight_type": ["dumbbell"],
-        "primary_muscles": ["deltoids"],
-        "secondary_muscles": ["traps", "triceps"]
-    },
-
-    # Core
-    "plank": {
-        "label": "Plank",
-        "category": "core",
-        "weight_type": ["bodyweight"],
-        "primary_muscles": ["core"],
-        "secondary_muscles": ["shoulders"]
-    },
-    "side_plank": {
-        "label": "Side Plank",
-        "category": "core",
-        "weight_type": ["bodyweight"],
-        "primary_muscles": ["obliques"],
-        "secondary_muscles": ["shoulders", "core"]
-    },
-    "russian_twist": {
-        "label": "Russian Twist",
-        "category": "core",
-        "weight_type": ["bodyweight", "dumbbell"],
-        "primary_muscles": ["obliques"],
-        "secondary_muscles": ["core"]
-    },
-    "bicycle_crunch": {
-        "label": "Bicycle Crunch",
-        "category": "core",
-        "weight_type": ["bodyweight"],
-        "primary_muscles": ["abs", "obliques"],
-        "secondary_muscles": []
-    },
-    "leg_raise": {
-        "label": "Leg Raise",
-        "category": "core",
-        "weight_type": ["bodyweight"],
-        "primary_muscles": ["abs", "hip_flexors"],
-        "secondary_muscles": []
-    },
-    "mountain_climber": {
-        "label": "Mountain Climber",
-        "category": "core",
-        "weight_type": ["bodyweight"],
-        "primary_muscles": ["abs", "hip_flexors"],
-        "secondary_muscles": ["shoulders"]
-    },
-    "dead_bug": {
-        "label": "Dead Bug",
-        "category": "core",
-        "weight_type": ["bodyweight"],
-        "primary_muscles": ["abs", "core"],
-        "secondary_muscles": []
-    }
-}
 
 # map internal exercise key -> friendly label
 EXERCISE_LABELS = {key: ex["label"] for key, ex in EXERCISES.items()}
@@ -311,26 +64,50 @@ def save_workout(
     workout_name: str = Form(...),
     category: List[str] = Form(...),
     exercise: List[str] = Form(...),
-    weight_kg: List[float] = Form(...),
+    load_type: List[str] = Form(...),
+    load: Optional[List[str]] = Form(None),         # <-- string for initial parsing
+    band_level: Optional[List[str]] = Form(None),   # <-- string for initial parsing
     reps: List[int] = Form(...),
     sets: List[int] = Form(...),
-    rest_sec: List[int] = Form(...)
+    rest_sec: List[int] = Form(...),
+    duration_sec: Optional[List[str]] = Form(None)  # <-- string for initial parsing
 ):
-    # Save template CSV
+    n = len(exercise)
+
+    # Convert strings to float/int safely
+    load = [float(x) if x else None for x in (load or [])]
+    if len(load) < n:
+        load.extend([None] * (n - len(load)))
+
+    band_level = band_level or []
+    band_level.extend("" * (n - len(band_level)))
+
+    duration_sec = [int(x) if x else None for x in (duration_sec or [])]
+    if len(duration_sec) < n:
+        duration_sec.extend([None] * (n - len(duration_sec)))
+
+
+    file_exists = os.path.exists(TEMPLATES_FILE)
     with open(TEMPLATES_FILE, "a", newline="") as f:
-        writer = csv.writer(f)
-        for i in range(len(exercise)):
-            writer.writerow([
-                workout_name,
-                category[i],
-                exercise[i],
-                weight_kg[i],
-                reps[i],
-                sets[i],
-                rest_sec[i]
-            ])
+        writer = csv.DictWriter(f, fieldnames=TEMPLATE_HEADERS)
+        if not file_exists or os.path.getsize(TEMPLATES_FILE) == 0:
+            writer.writeheader()
+        for i in range(n):
+            writer.writerow({
+                "workout_name": workout_name,
+                "category": category[i],
+                "exercise": exercise[i],
+                "load_type": load_type[i],
+                "load": load[i] if load[i] is not None else "",
+                "band_level": band_level[i] if band_level[i] else "",
+                "reps": reps[i],
+                "sets": sets[i],
+                "rest_sec": rest_sec[i],
+                "duration_sec": duration_sec[i] if duration_sec[i] is not None else ""
+            })
 
     return RedirectResponse("/", status_code=303)
+
 
 # Utility to get list of saved templates
 def get_template_names():
@@ -365,7 +142,8 @@ def load_template(request: Request, workout_name: str):
         "workout_name": workout_name,
         "workout_data": data,
         "exercise_labels": EXERCISE_LABELS,
-        "category_labels": CATEGORY_LABELS
+        "category_labels": CATEGORY_LABELS,
+        "EXERCISES": EXERCISES
     })
 
 
@@ -373,25 +151,44 @@ def load_template(request: Request, workout_name: str):
 def save_completed_workout(
     workout_name: str = Form(...),
     exercise: List[str] = Form(...),
-    weight_kg: List[float] = Form(...),
+    load_type: List[str] = Form(...),
+    load: Optional[List[str]] = Form(None),
+    band_level: Optional[List[str]] = Form(None),
     reps: List[int] = Form(...),
     sets: List[int] = Form(...),
+    rpe: List[str] = Form(...),
     rest_sec: List[int] = Form(...),
-    rpe: List[str] = Form(...)
+    duration_sec: Optional[List[str]] = Form(None)
 ):
     rpe = [float(x) if x != "" else None for x in rpe]
     with open(COMPLETED_FILE, "a", newline="") as f:
         writer = csv.writer(f)
-        for i in range(len(exercise)):
+        n = len(exercise)
+
+        # Convert strings to float/int safely
+        load = [float(x) if x else None for x in (load or [])]
+        if len(load) < n:
+            load.extend([None] * (n - len(load)))
+
+        band_level = band_level or []
+        band_level.extend("" * (n - len(band_level)))
+
+        duration_sec = [int(x) if x else None for x in (duration_sec or [])]
+        if len(duration_sec) < n:
+            duration_sec.extend([None] * (n - len(duration_sec)))
+
+        for i in range(n):
             writer.writerow([
                 date.today().isoformat(),
                 workout_name,
                 exercise[i],
-                weight_kg[i],
+                load_type[i],
+                load[i] if load[i] is not None else "",
                 reps[i],
                 sets[i],
                 rpe[i] if rpe[i] is not None else "",
-                rest_sec[i]
+                rest_sec[i],
+                duration_sec[i] if duration_sec[i] is not None else ""
             ])
     return RedirectResponse("/", status_code=303)
 
@@ -427,10 +224,13 @@ def edit_workout(request: Request, workout_name: str):
 def update_workout(
     workout_name: str = Form(...),
     exercise: List[str] = Form(...),
-    weight_kg: List[float] = Form(...),
+    load: Optional[List[str]] = Form(None),
+    load_type: List[str] = Form(None),
+    band_level: Optional[List[str]] = Form(None),
     reps: List[int] = Form(...),
     sets: List[int] = Form(...),
-    rest_sec: List[int] = Form(...)
+    rest_sec: List[int] = Form(...),
+    duration_sec: Optional[List[str]] = Form(None)
 ):
     updated_rows = []
 
@@ -441,18 +241,35 @@ def update_workout(
             if row["workout_name"] != workout_name:
                 updated_rows.append(row)
 
+    n = len(exercise)
+
+    # Convert strings to float/int safely
+    load = [float(x) if x else None for x in (load or [])]
+    if len(load) < n:
+        load.extend([None] * (n - len(load)))
+
+    band_level = band_level or []
+    band_level.extend("" * (n - len(band_level)))
+
+    duration_sec = [int(x) if x else None for x in (duration_sec or [])]
+    if len(duration_sec) < n:
+        duration_sec.extend([None] * (n - len(duration_sec)))
+
+
     # Add updated workout rows
-    for i in range(len(exercise)):
+    for i in range(n):
         category = get_category_for_exercise(exercise[i])
 
         updated_rows.append({
             "workout_name": workout_name.strip(),
             "category": category,
             "exercise": exercise[i],
-            "weight_kg": weight_kg[i],
+            "load_type": load_type[i],
+            "load": load[i] if load[i] is not None else "",
             "reps": reps[i],
             "sets": sets[i],
-            "rest_sec": rest_sec[i]
+            "rest_sec": rest_sec[i],
+            "duration_sec": duration_sec[i] if duration_sec[i] is not None else ""
         })
 
     # Rewrite file
@@ -475,7 +292,8 @@ def builder(request: Request):
             "request": request,
             "categories": categories,
             "category_labels": CATEGORY_LABELS,
-            "exercise_labels": EXERCISE_LABELS
+            "exercise_labels": EXERCISE_LABELS,
+            "EXERCISES": EXERCISES
         },
     )
 
@@ -491,7 +309,9 @@ def delete_workout(workout_name: str):
 
     # Write back all rows except the deleted one
     with open(TEMPLATES_FILE, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["workout_name", "category", "exercise", "weight_kg", "reps", "sets", "rest_sec"])
+        writer = csv.DictWriter(f, fieldnames=[
+            "workout_name", "category", "exercise", "load", "reps", "sets", "rest_sec", "duration_sec"
+        ])
         writer.writeheader()
         writer.writerows(rows)
 
@@ -534,10 +354,11 @@ def completed_workout(request: Request, workout_date: str):
     exercise_labels = {key: ex["label"] for key, ex in EXERCISES.items()}
     category_labels = {cat: cat.capitalize() for cat in set(ex["category"] for ex in EXERCISES.values())}
 
-    return templates.TemplateResponse("completed_workout.html", {
+    return templates.TemplateResponse("view_completed_workout.html", {
         "request": request,
         "workout_date": workout_date,
         "rows": rows,
         "exercise_labels": exercise_labels,
-        "category_labels": category_labels
+        "category_labels": category_labels,
+        "EXERCISES": EXERCISES,
     })
