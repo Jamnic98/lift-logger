@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Workouts</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        button {
+            margin: 2px;
+        }
+    </style>
+    <script>
+        function confirmDelete(workoutName) {
+            if (confirm(`Are you sure you want to delete "${workoutName}"?`)) {
+                window.location.href = `/delete_workout/${encodeURIComponent(workoutName)}`;
+            }
+        }
+    </script>
+</head>
+<body>
+
+<h1>Your Workout Templates</h1>
+
+{% if templates %}
+<table>
+    <thead>
+        <tr>
+            <th>Workout</th>
+            <th>Run</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for name in templates %}
+        <tr>
+            <td>{{ name }}</td>
+            <td>
+                <a href="/load_template/{{ name }}">
+                    <button>Run</button>
+                </a>
+            </td>
+            <td>
+                <a href="/edit_workout/{{ name }}">
+                    <button>Edit</button>
+                </a>
+            </td>
+            <td>
+                <button onclick="confirmDelete('{{ name }}')">Delete</button>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No workouts saved yet.</p>
+{% endif %}
+
+<br>
+<br>
+
+<a href="/builder">Workout Builder</a>
+<br>
+<br>
+<a href="/completed_workouts">Completed Workouts</a>
+
+
+</body>
+</html>

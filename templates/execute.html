@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Execute {{ workout_name }}</title>
+    </head>
+    <body>
+        <h1>Workout: {{ workout_name }}</h1>
+
+        {% if message %}
+        <p>{{ message }}</p>
+        {% else %}
+        <form action="/save_completed_workout/" method="post">
+            <input type="hidden" name="workout_name" value="{{ workout_name }}">
+
+                {% for row in workout_data %}
+                    <div>
+                        <strong>{{ exercise_labels[row.exercise] }}</strong> ({{ category_labels[row.category] }})<br>
+
+                        <!-- Hidden input for exercise -->
+                        <input type="hidden" name="exercise" value="{{ row.exercise }}">
+
+                        Weight (kg): <input type="number" step="0.5" name="weight_kg" value="{{ row.weight_kg }}">
+                        Reps: <input type="number" name="reps" value="{{ row.reps }}">
+                        Sets: <input type="number" name="sets" value="{{ row.sets }}">
+                        Rest (s): <input type="number" name="rest_sec" value="{{ row.rest_sec }}">
+                        RPE: <input type="number" name="rpe" value="" required>
+                    </div>
+                    <hr>
+                {% endfor %}
+
+
+            <button type="submit">Log Completed Workout</button>
+        </form>
+        {% endif %}
+
+        <br />
+        <br />
+
+        <a href="/execute">Workout List</a>
+    </body>
+</html>

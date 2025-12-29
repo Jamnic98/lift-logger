@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Edit workout</title>
+        <style>
+            table {
+                border-collapse: collapse;
+            }
+            th, td {
+                padding: 6px 10px;
+                border: 1px solid #ccc;
+            }
+            select, input {
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Edit workout: {{ workout_name }}</h2>
+
+        <form method="post" action="/update_workout/">
+            <input type="hidden" name="workout_name" value="{{ workout_name }}">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Exercise</th>
+                        <th>Weight (kg)</th>
+                        <th>Reps</th>
+                        <th>Sets</th>
+                        <th>Rest (sec)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for row in rows %}
+                    <tr>
+                        <td>
+                            <select name="exercise">
+                                {% for category, exercises in categories.items() %}
+                                    <optgroup label="{{ category_labels[category] }}">
+                                        {% for ex in exercises %}
+                                            <option value="{{ ex }}"
+                                                {% if ex == row.exercise %}selected{% endif %}>
+                                                {{ exercise_labels[ex] }}
+                                            </option>
+                                        {% endfor %}
+                                    </optgroup>
+                                {% endfor %}
+                            </select>
+                        </td>
+
+                        <td>
+                            <input name="weight_kg" type="number" step="0.5"
+                                   value="{{ row.weight_kg }}">
+                        </td>
+
+                        <td>
+                            <input name="reps" type="number" value="{{ row.reps }}">
+                        </td>
+
+                        <td>
+                            <input name="sets" type="number" value="{{ row.sets }}">
+                        </td>
+
+                        <td>
+                            <input name="rest_sec" type="number" value="{{ row.rest_sec }}">
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <br>
+            <button type="submit">Save changes</button>
+            <br>
+            <br>
+            <br>
+            <a href="/">Workout List</a>
+        </form>
+
+    </body>
+</html>
