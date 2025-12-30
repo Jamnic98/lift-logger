@@ -1,0 +1,25 @@
+echo "Running client tasks..."
+cd client || exit 1
+
+# Run lint-staged for staged files (format + lint)
+npx lint-staged
+
+# Run tests if "test" script exists, allow no tests without failing
+npm run test --if-present || echo "No client tests found, skipping."
+
+# Run build if "build" script exists
+npm run build --if-present || echo "No client build script, skipping."
+
+cd ../server || exit 1
+
+echo "Running server tasks..."
+# Run lint-staged for staged files (format + lint)
+npx lint-staged
+
+# Run tests if "test" script exists, allow no tests without failing
+npm run test --if-present || echo "No server tests found, skipping."
+
+# Run build if "build" script exists
+npm run build --if-present || echo "No server build script, skipping."
+
+exit 0

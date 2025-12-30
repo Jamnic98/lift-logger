@@ -1,0 +1,26 @@
+services:
+  nginx:
+    container_name: lift-logger-nginx
+    build:
+      context: ./client # Dockerfile.prod now builds React + Nginx
+      dockerfile: Dockerfile.prod
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    networks:
+      - app-network
+
+  server:
+    container_name: lift-logger-server-prod
+    build:
+      context: ./server
+      dockerfile: Dockerfile.prod
+    env_file:
+      - .env.production
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

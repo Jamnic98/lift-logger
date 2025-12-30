@@ -1,0 +1,52 @@
+services:
+  client:
+    container_name: lift-logger-client-dev
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./client:/app
+    env_file:
+      - .env.development
+    networks:
+      - app-network
+    ports:
+      - "5173:5173"
+    depends_on:
+      - server
+
+  server:
+    container_name: lift-logger-server-dev
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./server:/app
+    env_file:
+      - .env.development
+    networks:
+      - app-network
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+
+  mongo:
+    container_name: lift-logger-mongo-dev
+    image: mongo:7
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: lift-logger
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data:

@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --animate-flash-block: flash-block 1s infinite;
+  @keyframes flash-block {
+    0%,
+    100% {
+      background-color: #000;
+      color: #fff; /* always visible */
+    }
+    50% {
+      background-color: #fff;
+      color: #fff; /* stays white */
+    }
+  }
+
+  --animate-flash-underscore: flash-underscore 1s infinite;
+  @keyframes flash-underscore {
+    0%,
+    100% {
+      border-bottom: 2px solid #000;
+      color: #fff;
+    }
+    50% {
+      border-bottom: 2px solid #fff;
+      color: #000;
+    }
+  }
+
+  /* TODO:: review outline vs border & line width settings */
+  --animate-flash-outline: flash-outline 1s infinite;
+  @keyframes flash-outline {
+    0%,
+    100% {
+      outline: 2px solid #000;
+      color: #fff;
+    }
+    50% {
+      outline: 2px solid #fff;
+      color: #000;
+    }
+  }
+
+  --animate-flash-pipe: flash-pipe 1s infinite;
+  @keyframes flash-pipe {
+    0%,
+    100% {
+      border-left: 2px solid #000;
+      color: #fff;
+    }
+    50% {
+      border-left: 2px solid #fff;
+      color: #000;
+    }
+  }
+}
