@@ -1,17 +1,17 @@
 FROM node:24-slim
 
-# Set working directory
 WORKDIR /app
 
-# Install dependencies first
+# Copy package.json first and install deps
 COPY package*.json ./
+ENV NODE_ENV=development
 RUN npm install
 
-# Copy source code
+# Copy source
 COPY . .
 
-# Expose server port
+# Expose port
 EXPOSE 5000
 
-# Start server with hot-reload for TS
-CMD ["npx", "nodemon", "--watch", "src", "--exec", "ts-node", "src/index.ts"]
+# Start server
+CMD ["npm", "run", "dev"]

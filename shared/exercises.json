@@ -1,0 +1,233 @@
+{
+  "squat": {
+    "label": "Squat",
+    "category": "legs",
+    "weight_type": "kg",
+    "primary_muscles": ["quadriceps", "glutes"],
+    "secondary_muscles": ["hamstrings", "calves"]
+  },
+  "goblet_squat": {
+    "label": "Goblet Squat",
+    "category": "legs",
+    "weight_type": "kg",
+    "primary_muscles": ["quadriceps", "glutes"],
+    "secondary_muscles": ["hamstrings", "core"]
+  },
+  "lunge": {
+    "label": "Lunge",
+    "category": "legs",
+    "weight_type": "kg",
+    "primary_muscles": ["quadriceps", "glutes"],
+    "secondary_muscles": ["hamstrings"]
+  },
+  "reverse_lunge": {
+    "label": "Reverse Lunge",
+    "category": "legs",
+    "weight_type": "kg",
+    "primary_muscles": ["quadriceps", "glutes"],
+    "secondary_muscles": ["hamstrings"]
+  },
+  "calf_raise": {
+    "label": "Calf Raise",
+    "category": "legs",
+    "weight_type": "kg",
+    "primary_muscles": ["calves"],
+    "secondary_muscles": []
+  },
+  "clamshell": {
+    "label": "Clamshell",
+    "category": "legs",
+    "weight_type": "band",
+    "primary_muscles": ["glutes"],
+    "secondary_muscles": ["hips"]
+  },
+  "bicep_curl": {
+    "label": "Bicep Curl",
+    "category": "arms",
+    "weight_type": "kg",
+    "primary_muscles": ["biceps"],
+    "secondary_muscles": []
+  },
+  "hammer_curl": {
+    "label": "Hammer Curl",
+    "category": "arms",
+    "weight_type": "kg",
+    "primary_muscles": ["biceps", "brachialis"],
+    "secondary_muscles": []
+  },
+  "tricep_extension": {
+    "label": "Tricep Extension",
+    "category": "arms",
+    "weight_type": "kg/band",
+    "primary_muscles": ["triceps"],
+    "secondary_muscles": []
+  },
+  "overhead_tricep_extension": {
+    "label": "Overhead Tricep Extension",
+    "category": "arms",
+    "weight_type": "kg/band",
+    "primary_muscles": ["triceps"],
+    "secondary_muscles": []
+  },
+  "tricep_kickback": {
+    "label": "Tricep Kickback",
+    "category": "arms",
+    "weight_type": "kg",
+    "primary_muscles": ["triceps"],
+    "secondary_muscles": []
+  },
+  "push_up_close_grip": {
+    "label": "Push-Up (Close Grip / Tricep Focus)",
+    "category": "arms",
+    "weight_type": "bodyweight",
+    "primary_muscles": ["triceps"],
+    "secondary_muscles": ["chest", "shoulders", "core"]
+  },
+  "bent_over_dumbbell_row": {
+    "label": "Bent-Over Dumbbell Row",
+    "category": "back",
+    "weight_type": "kg",
+    "primary_muscles": ["lats", "rhomboids"],
+    "secondary_muscles": ["biceps", "rear_delts"]
+  },
+  "single_arm_dumbbell_row": {
+    "label": "Single-Arm Dumbbell Row",
+    "category": "back",
+    "weight_type": "kg",
+    "primary_muscles": ["lats", "rhomboids"],
+    "secondary_muscles": ["biceps", "rear_delts"]
+  },
+  "pull_up": {
+    "label": "Pull-Up / Chin-Up",
+    "category": "back",
+    "weight_type": "bodyweight",
+    "primary_muscles": ["lats"],
+    "secondary_muscles": ["biceps", "traps"]
+  },
+  "renegade_row": {
+    "label": "Renegade Row",
+    "category": "back",
+    "weight_type": "kg",
+    "primary_muscles": ["lats", "rhomboids"],
+    "secondary_muscles": ["biceps", "core", "shoulders"]
+  },
+  "bench_press": {
+    "label": "Bench Press",
+    "category": "chest",
+    "weight_type": "kg",
+    "primary_muscles": ["chest"],
+    "secondary_muscles": ["triceps", "shoulders"]
+  },
+  "dumbbell_fly": {
+    "label": "Dumbbell Fly",
+    "category": "chest",
+    "weight_type": "kg",
+    "primary_muscles": ["chest"],
+    "secondary_muscles": ["shoulders"]
+  },
+  "push_up": {
+    "label": "Push-Up",
+    "category": "chest",
+    "weight_type": "bodyweight",
+    "primary_muscles": ["chest"],
+    "secondary_muscles": ["triceps", "shoulders", "core"]
+  },
+  "incline_push_up": {
+    "label": "Incline Push-Up",
+    "category": "chest",
+    "weight_type": "bodyweight",
+    "primary_muscles": ["chest"],
+    "secondary_muscles": ["triceps", "shoulders", "core"]
+  },
+  "decline_push_up": {
+    "label": "Decline Push-Up",
+    "category": "chest",
+    "weight_type": "bodyweight",
+    "primary_muscles": ["chest"],
+    "secondary_muscles": ["triceps", "shoulders", "core"]
+  },
+  "shoulder_press": {
+    "label": "Shoulder Press",
+    "category": "shoulders",
+    "weight_type": "kg",
+    "primary_muscles": ["deltoids"],
+    "secondary_muscles": ["traps", "triceps"]
+  },
+  "lateral_raise": {
+    "label": "Lateral Raise",
+    "category": "shoulders",
+    "weight_type": "kg/band",
+    "primary_muscles": ["lateral_delts"],
+    "secondary_muscles": []
+  },
+  "front_raise": {
+    "label": "Front Raise",
+    "category": "shoulders",
+    "weight_type": "kg/band",
+    "primary_muscles": ["front_delts"],
+    "secondary_muscles": []
+  },
+  "rear_delt_fly": {
+    "label": "Rear Delt Fly",
+    "category": "shoulders",
+    "weight_type": "kg/band",
+    "primary_muscles": ["rear_delts"],
+    "secondary_muscles": ["traps"]
+  },
+  "arnold_press": {
+    "label": "Arnold Press",
+    "category": "shoulders",
+    "weight_type": "kg",
+    "primary_muscles": ["deltoids"],
+    "secondary_muscles": ["traps", "triceps"]
+  },
+  "plank": {
+    "label": "Plank",
+    "category": "core",
+    "weight_type": "bodyweight",
+    "primary_muscles": ["core"],
+    "secondary_muscles": ["shoulders"]
+  },
+  "side_plank": {
+    "label": "Side Plank",
+    "category": "core",
+    "weight_type": "bodyweight",
+    "primary_muscles": ["obliques"],
+    "secondary_muscles": ["shoulders", "core"]
+  },
+  "russian_twist": {
+    "label": "Russian Twist",
+    "category": "core",
+    "weight_type": "kg",
+    "primary_muscles": ["obliques"],
+    "secondary_muscles": ["core"]
+  },
+  "bicycle_crunch": {
+    "label": "Bicycle Crunch",
+    "category": "core",
+    "weight_type": "bodyweight",
+    "primary_muscles": ["abs", "obliques"],
+    "secondary_muscles": []
+  },
+  "leg_raise": {
+    "label": "Leg Raise",
+    "category": "core",
+    "weight_type": "bodyweight",
+    "primary_muscles": ["abs", "hip_flexors"],
+    "secondary_muscles": []
+  },
+  "mountain_climber": {
+    "label": "Mountain Climber",
+    "category": "core",
+    "weight_type": "bodyweight",
+    "primary_muscles": ["abs", "hip_flexors"],
+    "secondary_muscles": ["shoulders"]
+  },
+  "dead_bug": {
+    "label": "Dead Bug",
+    "category": "core",
+    "weight_type": "bodyweight",
+    "primary_muscles": ["abs", "core"],
+    "secondary_muscles": []
+  }
+}

@@ -21,7 +21,10 @@ services:
       context: ./server
       dockerfile: Dockerfile.dev
     volumes:
-      - ./server:/app
+      - ./server/src:/app/src
+      - ./server/package*.json:/app/package*.json
+      - ./server/shared:/app/shared
+      - /app/node_modules
     env_file:
       - .env.development
     networks:
@@ -30,6 +33,7 @@ services:
       - "5000:5000"
     depends_on:
       - mongo
+    command: ["npm", "run", "dev"]
 
   mongo:
     container_name: lift-logger-mongo-dev

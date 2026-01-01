@@ -3,29 +3,26 @@ FROM node:24-slim AS builder
 
 WORKDIR /app
 
-# Copy package.json and install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy source code
 COPY . .
 
-# Compile TypeScript
-RUN npx tsc
+# Compile TS and fix aliases
+RUN npx tsc && npx tsc-alias
 
 # Stage 2: Production image
 FROM node:24-slim
 
 WORKDIR /app
 
-# Copy only production dependencies
 COPY package*.json ./
 RUN npm install --production
 
 # Copy compiled JS from builder
 COPY --from=builder /app/dist ./dist
 
+
 EXPOSE 5000
 
-# Run compiled JS
 CMD ["node", "dist/index.js"]
