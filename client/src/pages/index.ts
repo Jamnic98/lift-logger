@@ -1,0 +1,7 @@
+export { default as Dashboard } from './Dashboard'
+export { default as TemplateCreate } from './TemplateCreate'
+export { default as TemplateEdit } from './TemplateEdit'
+export { default as TemplateList } from './TemplateList'
+export { default as WorkoutOverview } from './WorkoutOverview'
+export { default as WorkoutRun } from './WorkoutRun'
+export { default as WorkoutView } from './WorkoutView'

@@ -19,6 +19,16 @@ router.post('/', async (req, res, next) => {
   }
 })
 
+// fetch all templates
+router.get('/', async (_req, res, next) => {
+  try {
+    const templates = await getAllTemplates()
+    res.json(templates)
+  } catch (error) {
+    next(error)
+  }
+})
+
 // fetch template by id
 router.get('/:id', async (req, res, next) => {
   try {
@@ -30,16 +40,6 @@ router.get('/:id', async (req, res, next) => {
     }
 
     res.json(template)
-  } catch (error) {
-    next(error)
-  }
-})
-
-// fetch all templates
-router.get('/', async (_req, res, next) => {
-  try {
-    const templates = await getAllTemplates()
-    res.json(templates)
   } catch (error) {
     next(error)
   }

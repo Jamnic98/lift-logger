@@ -26,7 +26,8 @@ export interface TrackedExerciseGroup {
 export type WorkoutEntry = TrackedExercise | TrackedExerciseGroup
 
 export interface Workout {
-  _id: Types.ObjectId
+  id?: string
+  _id?: Types.ObjectId
   name: string
   exercises: WorkoutEntry[]
   startTime: Date

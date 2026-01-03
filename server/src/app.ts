@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 
 import { errorMiddleware } from 'middlewares/error.middleware'
 import exercisesRouter from 'modules/exercises/exercise.router'
@@ -7,6 +8,7 @@ import workoutRouter from 'modules/workouts/workout.route'
 
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 
 // Routers

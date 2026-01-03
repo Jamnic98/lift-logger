@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose'
+import { model, Schema, Types } from 'mongoose'
 
 import { EquipmentEnum, BandResistanceEnum } from 'types/common'
 import { Template } from 'types/template'
@@ -38,7 +38,17 @@ const TemplateSchema = new Schema<Template>(
       },
     ],
   },
-  { timestamps: false }
+  { timestamps: true }
 )
+
+// --- Add toJSON transform ---
+TemplateSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: (_doc, ret) => {
+    ret.id = (ret._id as Types.ObjectId).toHexString()
+    delete (ret as { _id?: unknown })._id
+  },
+})
 
 export const TemplateModel = model<Template>('Template', TemplateSchema)

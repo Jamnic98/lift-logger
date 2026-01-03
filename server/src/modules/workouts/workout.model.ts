@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose'
+import { model, Schema, Types } from 'mongoose'
 
 import { EquipmentEnum, BandResistanceEnum } from 'types/common'
 import { Workout } from 'types/workout'
@@ -50,5 +50,15 @@ const WorkoutSchema = new Schema<Workout>(
   },
   { timestamps: false }
 )
+
+// --- Add toJSON transform ---
+WorkoutSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: (_doc, ret) => {
+    ret.id = (ret._id as Types.ObjectId).toHexString()
+    delete (ret as { _id?: unknown })._id
+  },
+})
 
 export const WorkoutModel = model<Workout>('Workout', WorkoutSchema)

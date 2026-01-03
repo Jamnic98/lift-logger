@@ -22,6 +22,7 @@ export interface TemplateExerciseGroup {
 export type TemplateEntry = TemplateExercise | TemplateExerciseGroup
 
 export interface Template {
+  id: string
   _id: Types.ObjectId
   name: string
   exercises: TemplateEntry[]
