@@ -21,10 +21,11 @@ type ExerciseMeta = {
 export type ExerciseMap = Record<string, ExerciseMeta>
 
 export type DraftExercise = {
+  id: string
   type: 'single'
   exerciseKey: string
-  sets: number
   equipment: Equipment
+  sets?: number
   reps?: number
   weight?: number
   bandResistance?: BandResistance
@@ -34,8 +35,10 @@ export type DraftExercise = {
 }
 
 export type DraftSuperset = {
+  id: string
   type: 'superset'
   exercises: DraftExercise[]
+  sets: number
   restAfter?: number
 }
 

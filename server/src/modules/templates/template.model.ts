@@ -7,7 +7,7 @@ import { Template } from 'types/template'
 const TemplateExerciseSchema = new Schema(
   {
     exerciseKey: { type: String, required: true },
-    sets: { type: Number, required: true },
+    sets: { type: Number },
     reps: { type: Number },
     equipment: { type: String, enum: EquipmentEnum, required: true },
     weight: { type: Number },
@@ -22,6 +22,7 @@ const TemplateExerciseSchema = new Schema(
 // Superset / back-to-back exercises
 export const TemplateExerciseGroupSchema = new Schema(
   {
+    sets: { type: Number, required: true },
     superset: { type: [TemplateExerciseSchema], required: true },
     restAfter: { type: Number },
   },

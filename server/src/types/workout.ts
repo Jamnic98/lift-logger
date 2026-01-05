@@ -13,13 +13,14 @@ export interface SetEntry {
 
 export interface TrackedExercise {
   exerciseKey: string
-  sets: SetEntry[]
+  sets?: SetEntry[]
   rest?: number
   notes?: string
 }
 
 export interface TrackedExerciseGroup {
   superset: TrackedExercise[]
+  sets: number
   restAfter?: number
 }
 

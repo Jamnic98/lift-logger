@@ -1,15 +1,20 @@
 import { useState, useEffect } from 'react'
+import { Trash } from 'lucide-react'
 
 import { Button } from 'components'
 import type { DraftExercise, ExerciseMap, Equipment, BandResistance } from 'types'
 
 export default function ExerciseRow({
   value,
+  hideSets = false,
+  hideRest = false,
   onChange,
   onRemove,
   exerciseMap,
 }: {
   value: DraftExercise
+  hideSets?: boolean
+  hideRest?: boolean
   onChange: (next: DraftExercise) => void
   onRemove: () => void
   exerciseMap: ExerciseMap
@@ -70,141 +75,150 @@ export default function ExerciseRow({
   const visibleFields = getVisibleFields()
 
   return (
-    <div className="border p-3 gap-3 flex flex-col md:flex-row flex-wrap items-start">
-      {/* Category */}
-      <div className="flex flex-col">
-        <label>Category</label>
-        <select
-          value={category}
-          onChange={(e) => {
-            const newCat = e.target.value
-            setCategory(newCat)
-            const first = Object.entries(exerciseMap).find(([_, x]) => x.category === newCat)
-            if (!first) return
-            onChange({
-              ...value,
-              exerciseKey: first[0],
-              equipment: exerciseMap[first[0]].equipment[0],
-            })
-          }}
-        >
-          {Array.from(new Set(Object.values(exerciseMap).map((e) => e.category))).map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
+    <div className="flex w-full items-center gap-4 border">
+      <div className="flex flex-wrap gap-3 p-3 flex-1">
+        {/* Category */}
+        <div className="flex flex-col flex-1 min-w-30">
+          <label>Category</label>
+          <select
+            value={category}
+            onChange={(e) => {
+              const newCat = e.target.value
+              setCategory(newCat)
+              const first = Object.entries(exerciseMap).find(([_, x]) => x.category === newCat)
+              if (!first) return
+              onChange({
+                ...value,
+                exerciseKey: first[0],
+                equipment: exerciseMap[first[0]].equipment[0],
+              })
+            }}
+            className="w-full"
+          >
+            {Array.from(new Set(Object.values(exerciseMap).map((e) => e.category))).map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Exercise */}
+        <div className="flex flex-col flex-1 min-w-37.5">
+          <label>Exercise</label>
+          <select
+            value={value.exerciseKey}
+            onChange={(e) => {
+              const key = e.target.value
+              onChange({
+                ...value,
+                exerciseKey: key,
+                equipment: exerciseMap[key].equipment[0],
+              })
+            }}
+            className="w-full"
+          >
+            {exercisesForCategory.map(([key, e]) => (
+              <option key={key} value={key}>
+                {e.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Equipment */}
+        <div className="flex flex-col flex-1 min-w-30">
+          <label>Equipment</label>
+          <select
+            value={value.equipment}
+            onChange={(e) => onChange({ ...value, equipment: e.target.value as Equipment })}
+            className="w-full"
+          >
+            {currentExerciseMeta?.equipment.map((eq) => (
+              <option key={eq} value={eq}>
+                {eq}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Dynamic fields */}
+        {!hideSets && visibleFields.includes('sets') && (
+          <div className="flex flex-col w-20">
+            <label>Sets</label>
+            <input
+              type="number"
+              value={value.sets}
+              onChange={(e) => onChange({ ...value, sets: Number(e.target.value) })}
+              className="w-full"
+            />
+          </div>
+        )}
+
+        {visibleFields.includes('reps') && (
+          <div className="flex flex-col w-20">
+            <label>Reps</label>
+            <input
+              type="number"
+              value={value.reps ?? '8'}
+              onChange={(e) => onChange({ ...value, reps: Number(e.target.value) })}
+              className="w-full"
+            />
+          </div>
+        )}
+        {visibleFields.includes('weight') && (
+          <div className="flex flex-col w-24">
+            <label>Weight (kg)</label>
+            <input
+              type="number"
+              value={value.weight ?? ''}
+              onChange={(e) => onChange({ ...value, weight: Number(e.target.value) })}
+              className="w-full"
+            />
+          </div>
+        )}
+        {visibleFields.includes('bandResistance') && (
+          <div className="flex flex-col w-24">
+            <label>Band</label>
+            <input
+              type="text"
+              value={value.bandResistance ?? ''}
+              onChange={(e) =>
+                onChange({ ...value, bandResistance: e.target.value as BandResistance })
+              }
+              className="w-full"
+            />
+          </div>
+        )}
+        {visibleFields.includes('duration') && (
+          <div className="flex flex-col w-24">
+            <label>Duration (sec)</label>
+            <input
+              type="number"
+              value={value.duration ?? ''}
+              onChange={(e) => onChange({ ...value, duration: Number(e.target.value) })}
+              className="w-full"
+            />
+          </div>
+        )}
+
+        {/* Rest between sets */}
+        {!hideRest && (
+          <div className="flex flex-col w-24">
+            <label>Rest (sec)</label>
+            <input
+              type="number"
+              value={value.restBetweenSets ?? 30}
+              onChange={(e) => onChange({ ...value, restBetweenSets: Number(e.target.value) })}
+              className="w-full"
+            />
+          </div>
+        )}
       </div>
-
-      {/* Exercise */}
-      <div className="flex flex-col">
-        <label>Exercise</label>
-        <select
-          value={value.exerciseKey}
-          onChange={(e) => {
-            const key = e.target.value
-            onChange({
-              ...value,
-              exerciseKey: key,
-              equipment: exerciseMap[key].equipment[0],
-            })
-          }}
-        >
-          {exercisesForCategory.map(([key, e]) => (
-            <option key={key} value={key}>
-              {e.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Equipment */}
-      <div className="flex flex-col">
-        <label>Equipment</label>
-        <select
-          value={value.equipment}
-          onChange={(e) => onChange({ ...value, equipment: e.target.value as Equipment })}
-        >
-          {currentExerciseMeta?.equipment.map((eq) => (
-            <option key={eq} value={eq}>
-              {eq}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Dynamic fields */}
-      {visibleFields.includes('sets') && (
-        <div className="flex flex-col">
-          <label>Sets</label>
-          <input
-            type="number"
-            value={value.sets}
-            onChange={(e) => onChange({ ...value, sets: Number(e.target.value) })}
-            className="w-16"
-          />
-        </div>
-      )}
-      {visibleFields.includes('reps') && (
-        <div className="flex flex-col">
-          <label>Reps</label>
-          <input
-            type="number"
-            value={value.reps ?? ''}
-            onChange={(e) => onChange({ ...value, reps: Number(e.target.value) })}
-            className="w-16"
-          />
-        </div>
-      )}
-      {visibleFields.includes('weight') && (
-        <div className="flex flex-col">
-          <label>Weight (kg)</label>
-          <input
-            type="number"
-            value={value.weight ?? ''}
-            onChange={(e) => onChange({ ...value, weight: Number(e.target.value) })}
-            className="w-16"
-          />
-        </div>
-      )}
-      {visibleFields.includes('bandResistance') && (
-        <div className="flex flex-col">
-          <label>Band</label>
-          <input
-            type="text"
-            value={value.bandResistance ?? ''}
-            onChange={(e) =>
-              onChange({ ...value, bandResistance: e.target.value as BandResistance })
-            }
-            className="w-16"
-          />
-        </div>
-      )}
-      {visibleFields.includes('duration') && (
-        <div className="flex flex-col">
-          <label>Duration (sec)</label>
-          <input
-            type="number"
-            value={value.duration ?? ''}
-            onChange={(e) => onChange({ ...value, duration: Number(e.target.value) })}
-            className="w-16"
-          />
-        </div>
-      )}
-
-      {/* Rest between sets */}
-      <div className="flex flex-col">
-        <label>Rest (sec)</label>
-        <input
-          type="number"
-          value={value.restBetweenSets ?? 30}
-          onChange={(e) => onChange({ ...value, restBetweenSets: Number(e.target.value) })}
-          className="w-16"
-        />
-      </div>
-
-      <div className="self-end">
-        <Button onClick={onRemove}>Remove</Button>
+      <div className="pr-4">
+        <Button onClick={onRemove} variant="danger">
+          <Trash />
+        </Button>
       </div>
     </div>
   )

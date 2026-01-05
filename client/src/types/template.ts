@@ -2,8 +2,8 @@ import type { BandResistance, Equipment } from './common'
 
 export interface TemplateExerciseInput {
   exerciseKey: string
-  sets: number
   equipment: Equipment
+  sets?: number
   reps?: number
   weight?: number
   bandResistance?: BandResistance
@@ -13,6 +13,7 @@ export interface TemplateExerciseInput {
 }
 
 export interface TemplateExerciseGroupInput {
+  sets: number
   superset: TemplateExerciseInput[]
   restAfter?: number
 }

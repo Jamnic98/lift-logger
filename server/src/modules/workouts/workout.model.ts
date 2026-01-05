@@ -20,7 +20,7 @@ const SetEntrySchema = new Schema(
 const TrackedExerciseSchema = new Schema(
   {
     exerciseKey: { type: String, required: true },
-    sets: { type: [SetEntrySchema], required: true },
+    sets: { type: [SetEntrySchema] },
     rest: { type: Number },
     notes: { type: String },
   },
@@ -30,6 +30,7 @@ const TrackedExerciseSchema = new Schema(
 // Superset / back-to-back exercises
 export const TrackedExerciseGroupSchema = new Schema(
   {
+    sets: { type: [SetEntrySchema], required: true },
     superset: { type: [TrackedExerciseSchema], required: true },
     restAfter: { type: Number },
   },
