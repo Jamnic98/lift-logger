@@ -5,7 +5,6 @@ import { format } from 'date-fns'
 import { Button } from 'components'
 import { getAllTemplates, getAllWorkouts } from 'api'
 import type { Template, Workout } from 'types'
-import { Plus } from 'lucide-react'
 
 export default function Dashboard() {
   const navigate = useNavigate()
