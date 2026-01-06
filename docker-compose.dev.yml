@@ -38,7 +38,6 @@ services:
   mongo:
     container_name: lift-logger-mongo-dev
     image: mongo:7
-    restart: always
     environment:
       MONGO_INITDB_DATABASE: lift-logger
       MONGO_INITDB_ROOT_USERNAME: root

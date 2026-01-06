@@ -38,7 +38,7 @@ export default function WorkoutDetail({
         weight: e.weight,
         duration: e.duration,
         bandResistance: e.bandResistance,
-        rest: e.restBetweenSets ?? 30,
+        rest: e.rest,
       }
     }
   })

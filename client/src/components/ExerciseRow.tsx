@@ -2,7 +2,13 @@ import { useState, useEffect } from 'react'
 import { Trash } from 'lucide-react'
 
 import { Button } from 'components'
-import type { DraftExercise, ExerciseMap, Equipment, BandResistance } from 'types'
+import {
+  type DraftExercise,
+  type ExerciseMap,
+  type Equipment,
+  type BandResistance,
+  BandResistanceEnum,
+} from 'types'
 
 export default function ExerciseRow({
   value,
@@ -75,10 +81,10 @@ export default function ExerciseRow({
   const visibleFields = getVisibleFields()
 
   return (
-    <div className="flex w-full items-center gap-4 border">
-      <div className="flex flex-wrap gap-3 p-3 flex-1">
+    <div className="flex w-full items-center gap-4 border p-3">
+      <div className="flex flex-1 gap-3 flex-wrap">
         {/* Category */}
-        <div className="flex flex-col flex-1 min-w-30">
+        <div className="flex flex-col w-37.5">
           <label>Category</label>
           <select
             value={category}
@@ -104,7 +110,7 @@ export default function ExerciseRow({
         </div>
 
         {/* Exercise */}
-        <div className="flex flex-col flex-1 min-w-37.5">
+        <div className="flex flex-col w-55">
           <label>Exercise</label>
           <select
             value={value.exerciseKey}
@@ -127,7 +133,7 @@ export default function ExerciseRow({
         </div>
 
         {/* Equipment */}
-        <div className="flex flex-col flex-1 min-w-30">
+        <div className="flex flex-col w-35">
           <label>Equipment</label>
           <select
             value={value.equipment}
@@ -142,13 +148,14 @@ export default function ExerciseRow({
           </select>
         </div>
 
-        {/* Dynamic fields */}
+        {/* Dynamic numeric fields */}
         {!hideSets && visibleFields.includes('sets') && (
           <div className="flex flex-col w-20">
             <label>Sets</label>
             <input
               type="number"
               value={value.sets}
+              min={1}
               onChange={(e) => onChange({ ...value, sets: Number(e.target.value) })}
               className="w-full"
             />
@@ -161,62 +168,80 @@ export default function ExerciseRow({
             <input
               type="number"
               value={value.reps ?? '8'}
+              min={1}
               onChange={(e) => onChange({ ...value, reps: Number(e.target.value) })}
               className="w-full"
             />
           </div>
         )}
+
         {visibleFields.includes('weight') && (
-          <div className="flex flex-col w-24">
+          <div className="flex flex-col w-25">
             <label>Weight (kg)</label>
             <input
               type="number"
               value={value.weight ?? ''}
+              min={0.5}
+              step={0.5}
               onChange={(e) => onChange({ ...value, weight: Number(e.target.value) })}
               className="w-full"
             />
           </div>
         )}
+
         {visibleFields.includes('bandResistance') && (
-          <div className="flex flex-col w-24">
+          <div className="flex flex-col w-30">
             <label>Band</label>
-            <input
-              type="text"
+            <select
               value={value.bandResistance ?? ''}
               onChange={(e) =>
                 onChange({ ...value, bandResistance: e.target.value as BandResistance })
               }
               className="w-full"
-            />
+            >
+              <option value="" disabled>
+                Select
+              </option>
+              {BandResistanceEnum.map((band) => (
+                <option key={band} value={band}>
+                  {band}
+                </option>
+              ))}
+            </select>
           </div>
         )}
+
         {visibleFields.includes('duration') && (
-          <div className="flex flex-col w-24">
-            <label>Duration (sec)</label>
+          <div className="flex flex-col w-22">
+            <label>Duration (s)</label>
             <input
               type="number"
               value={value.duration ?? ''}
+              min={1}
               onChange={(e) => onChange({ ...value, duration: Number(e.target.value) })}
               className="w-full"
             />
           </div>
         )}
 
-        {/* Rest between sets */}
         {!hideRest && (
-          <div className="flex flex-col w-24">
+          <div className="flex flex-col w-25">
             <label>Rest (sec)</label>
             <input
               type="number"
-              value={value.restBetweenSets ?? 30}
-              onChange={(e) => onChange({ ...value, restBetweenSets: Number(e.target.value) })}
+              value={value.rest ?? 30}
+              min={5}
+              step={5}
+              onChange={(e) => onChange({ ...value, rest: Number(e.target.value) })}
               className="w-full"
             />
           </div>
         )}
       </div>
-      <div className="pr-4">
-        <Button onClick={onRemove} variant="danger">
+
+      {/* Remove button */}
+      <div>
+        <Button onClick={onRemove} variant="danger" className="p-2">
           <Trash />
         </Button>
       </div>

@@ -83,16 +83,14 @@ export default function SupersetBlock({
         {value.exercises.map((ex, idx) => (
           <ExerciseRow
             key={idx}
-            value={{ ...ex, sets: 1, restBetweenSets: 0 }}
+            value={{ ...ex }}
             exerciseMap={exerciseMap}
             hideRest
             hideSets
             onChange={(next) =>
               onChange({
                 ...value,
-                exercises: value.exercises.map((e, i) =>
-                  i === idx ? { ...next, sets: 1, restBetweenSets: 0 } : e
-                ),
+                exercises: value.exercises.map((e, i) => (i === idx ? { ...next } : e)),
               })
             }
             onRemove={() => {

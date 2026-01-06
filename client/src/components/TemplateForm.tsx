@@ -38,7 +38,6 @@ export default function TemplateForm({
         exerciseKey: firstKey,
         sets: 3,
         equipment: exerciseMap[firstKey].equipment[0],
-        restBetweenSets: 30,
       },
     ])
   }
@@ -56,11 +55,16 @@ export default function TemplateForm({
         sets: 3,
         exercises: [
           {
-            id: uuidv4(), // optional for inner exercises
+            id: uuidv4(),
             type: 'single',
             exerciseKey: firstKey,
             equipment: exerciseMap[firstKey].equipment[0],
-            restBetweenSets: 30,
+          },
+          {
+            id: uuidv4(),
+            type: 'single',
+            exerciseKey: firstKey,
+            equipment: exerciseMap[firstKey].equipment[0],
           },
         ],
       },
@@ -74,12 +78,12 @@ export default function TemplateForm({
       exercises: entries.map((e) =>
         e.type === 'single'
           ? (() => {
-              const { type, id, ...rest } = e
-              return { ...rest, restBetweenSets: e.restBetweenSets ?? 30 }
+              const { type, id, ...remaining } = e
+              return { ...remaining, rest: e.rest ?? 30 }
             })()
           : {
-              superset: e.exercises.map(({ type, id, ...rest }) => ({
-                ...rest,
+              superset: e.exercises.map(({ type, id, ...remaining }) => ({
+                ...remaining,
               })),
               sets: e.sets ?? 3,
               restAfter: e.restAfter ?? 30,
@@ -93,7 +97,7 @@ export default function TemplateForm({
   return (
     <div className="p-6 space-y-8">
       <input
-        className="border-b outline-none p-2 w-full mb-6"
+        className="border-b outline-none p-2 w-full mb-6 text-2xl"
         placeholder="Template name"
         value={name}
         onChange={(e) => setName(e.target.value)}
@@ -114,7 +118,7 @@ export default function TemplateForm({
         </div>
         <Button onClick={saveTemplate} variant="success" className="flex space-x-2">
           <Save />
-          <span>Save template</span>
+          <span>save</span>
         </Button>
       </div>
 

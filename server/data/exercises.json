@@ -1,46 +1,4 @@
 {
-  "squat": {
-    "label": "Squat",
-    "category": "legs",
-    "equipment": ["barbell", "dumbbell", "kettlebell", "bodyweight"],
-    "primary_muscles": ["quadriceps", "glutes"],
-    "secondary_muscles": ["hamstrings", "calves"]
-  },
-  "goblet_squat": {
-    "label": "Goblet Squat",
-    "category": "legs",
-    "equipment": ["dumbbell", "kettlebell"],
-    "primary_muscles": ["quadriceps", "glutes"],
-    "secondary_muscles": ["hamstrings", "core"]
-  },
-  "lunge": {
-    "label": "Lunge",
-    "category": "legs",
-    "equipment": ["bodyweight", "dumbbell", "kettlebell"],
-    "primary_muscles": ["quadriceps", "glutes"],
-    "secondary_muscles": ["hamstrings"]
-  },
-  "reverse_lunge": {
-    "label": "Reverse Lunge",
-    "category": "legs",
-    "equipment": ["bodyweight", "dumbbell", "kettlebell"],
-    "primary_muscles": ["quadriceps", "glutes"],
-    "secondary_muscles": ["hamstrings"]
-  },
-  "calf_raise": {
-    "label": "Calf Raise",
-    "category": "legs",
-    "equipment": ["bodyweight", "dumbbell", "kettlebell"],
-    "primary_muscles": ["calves"],
-    "secondary_muscles": []
-  },
-  "clamshell": {
-    "label": "Clamshell",
-    "category": "legs",
-    "equipment": ["band", "bodyweight"],
-    "primary_muscles": ["glutes"],
-    "secondary_muscles": ["hips"]
-  },
   "bicep_curl": {
     "label": "Bicep Curl",
     "category": "arms",
@@ -229,5 +187,47 @@
     "equipment": ["bodyweight"],
     "primary_muscles": ["abs", "core"],
     "secondary_muscles": []
+  },
+  "squat": {
+    "label": "Squat",
+    "category": "legs",
+    "equipment": ["barbell", "dumbbell", "kettlebell", "bodyweight"],
+    "primary_muscles": ["quadriceps", "glutes"],
+    "secondary_muscles": ["hamstrings", "calves"]
+  },
+  "goblet_squat": {
+    "label": "Goblet Squat",
+    "category": "legs",
+    "equipment": ["dumbbell", "kettlebell"],
+    "primary_muscles": ["quadriceps", "glutes"],
+    "secondary_muscles": ["hamstrings", "core"]
+  },
+  "lunge": {
+    "label": "Lunge",
+    "category": "legs",
+    "equipment": ["bodyweight", "dumbbell", "kettlebell"],
+    "primary_muscles": ["quadriceps", "glutes"],
+    "secondary_muscles": ["hamstrings"]
+  },
+  "reverse_lunge": {
+    "label": "Reverse Lunge",
+    "category": "legs",
+    "equipment": ["bodyweight", "dumbbell", "kettlebell"],
+    "primary_muscles": ["quadriceps", "glutes"],
+    "secondary_muscles": ["hamstrings"]
+  },
+  "calf_raise": {
+    "label": "Calf Raise",
+    "category": "legs",
+    "equipment": ["bodyweight", "dumbbell", "kettlebell"],
+    "primary_muscles": ["calves"],
+    "secondary_muscles": []
+  },
+  "clamshell": {
+    "label": "Clamshell",
+    "category": "legs",
+    "equipment": ["band", "bodyweight"],
+    "primary_muscles": ["glutes"],
+    "secondary_muscles": ["hips"]
   }
 }

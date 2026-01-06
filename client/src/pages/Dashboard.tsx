@@ -1,17 +1,14 @@
 import { useState, useEffect } from 'react'
-import { /* Link,  */ Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
+import { FileText, Activity } from 'lucide-react'
 
-import { Button } from 'components'
 import { getAllTemplates, getAllWorkouts } from 'api'
 import type { Template, Workout } from 'types'
 
 export default function Dashboard() {
-  const navigate = useNavigate()
-
-  const [, /* error */ setError] = useState<string | null>(null)
-  const [, /* loading */ setLoading] = useState(true)
-
+  const [, setError] = useState<string | null>(null)
+  const [, setLoading] = useState(true)
   const [templates, setTemplates] = useState<Template[] | null>(null)
   const [workouts, setWorkouts] = useState<Workout[] | null>(null)
 
@@ -24,79 +21,88 @@ export default function Dashboard() {
         ])
         setTemplates(templatesData)
         setWorkouts(workoutsData)
-      } catch (error) {
+      } catch (err) {
         setError('Failed to load data')
-        console.error(error)
+        console.error(err)
       } finally {
         setLoading(false)
       }
     }
-
     fetchData()
   }, [])
 
   return (
-    <>
-      <h1 className="text-xl font-bold mb-4">Dashboard</h1>
-      <div className="space-y-12">
-        <section>
-          {/* Recent Templates */}
-          <div>
-            <h2 className="text-lg font-semibold mb-2">Recent Templates</h2>
-            {templates ? (
-              <ul className="list-disc pl-5 space-y-1">
-                {templates.map((t) => (
-                  <li key={t.id}>
-                    <Link
-                      className="p-0 underline text-blue-400 hover:text-blue-800"
-                      to={`/templates/${t.id}`}
-                    >
-                      {t.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No templates to display</p>
-            )}
-          </div>
-          <div>Number of Templates: {templates?.length ?? 'n/a'}</div>
-          <div className="flex space-x-4">
-            <Button onClick={() => navigate('/templates')} className="cursor-pointer">
-              Templates
-            </Button>
-          </div>
-        </section>
+    <div className="p-6 space-y-16">
+      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
 
-        <section>
-          {/* Recent Workouts */}
-          <div>
-            <h2 className="text-lg font-semibold mb-2">Recent Workouts</h2>
-            {workouts ? (
-              <ul className="list-disc pl-5 space-y-1">
-                {workouts.map((w) => (
-                  <li key={w.id}>
-                    {format(new Date(w.startTime), 'dd/MM/yy')} -
-                    <Link
-                      className="p-0 underline text-blue-400 hover:text-blue-800"
-                      to={`/workouts/run/${w.id}`}
-                    >
-                      {' '}
-                      {w.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No workouts to display</p>
-            )}
-            <div className="">Number of Workouts: {workouts?.length ?? 'n/a'}</div>
-            <Button onClick={() => navigate('/workouts')} className="cursor-pointer">
-              Workouts
-            </Button>
-          </div>
-        </section>
-      </div>
-    </>
+      {/* Templates Section */}
+      <section className="space-y-4">
+        <header className="flex items-center justify-between">
+          <Link
+            to="/templates"
+            className="flex items-center space-x-2 text-lg font-semibold text-blue-500 hover:text-blue-700"
+          >
+            <FileText className="w-5 h-5" />
+            <span>Templates</span>
+          </Link>
+          <span className="text-gray-500 text-sm">Saved: {templates?.length ?? 0}</span>
+        </header>
+
+        <div>
+          {templates && templates.length > 0 ? (
+            <ul className="space-y-1">
+              {templates.map((t) => (
+                <li key={t.id} className="flex items-center space-x-2">
+                  <Link
+                    to={`/templates/${t.id}`}
+                    className="text-gray-800 hover:text-blue-600 truncate"
+                  >
+                    {t.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500">No recent templates</p>
+          )}
+        </div>
+      </section>
+
+      {/* Workouts Section */}
+      <section className="space-y-4">
+        <header className="flex items-center justify-between">
+          <Link
+            to="/workouts"
+            className="flex items-center space-x-2 text-lg font-semibold text-blue-500 hover:text-blue-700"
+          >
+            <Activity className="w-5 h-5" />
+            <span>Workouts</span>
+          </Link>
+          <span className="text-gray-500 text-sm">Completed: {workouts?.length ?? 0}</span>
+        </header>
+
+        <div>
+          {workouts && workouts.length > 0 ? (
+            <ul className="space-y-1">
+              {workouts.map((w) => (
+                <li key={w.id} className="flex items-center space-x-2">
+                  <span className="text-gray-500 text-sm">
+                    {format(new Date(w.startTime), 'dd/MM/yy')}
+                  </span>
+                  <Link
+                    to={`/workouts/run/${w.id}`}
+                    className="text-gray-800 hover:text-blue-600 truncate"
+                  >
+                    {w.name ?? 'Workout'}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500">No recent workouts</p>
+          )}
+        </div>
+      </section>
+    </div>
   )
 }

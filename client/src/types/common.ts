@@ -30,7 +30,7 @@ export type DraftExercise = {
   weight?: number
   bandResistance?: BandResistance
   duration?: number
-  restBetweenSets?: number
+  rest?: number
   notes?: string
 }
 
