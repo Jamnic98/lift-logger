@@ -2,6 +2,7 @@ import type { Equipment, BandResistance } from './common'
 
 // Single set in a tracked exercise
 export interface SetEntryInput {
+  rest: number
   reps: number
   bandResistance?: BandResistance
   equipment: Equipment
@@ -22,6 +23,7 @@ export interface TrackedExerciseInput {
 export interface TrackedExerciseGroupInput {
   superset: TrackedExerciseInput[]
   restAfter?: number
+  sets: number
 }
 
 export type TrackedExerciseOrGroupInput = TrackedExerciseInput | TrackedExerciseGroupInput
@@ -38,3 +40,5 @@ export interface Workout extends WorkoutInput {
   startTime: string
   endTime?: string
 }
+
+export type WorkoutFormVariant = 'create' | 'view' | 'track'

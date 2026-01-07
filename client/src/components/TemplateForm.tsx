@@ -33,16 +33,17 @@ export default function TemplateForm({
     setEntries((prev) => [
       ...prev,
       {
-        id: uuidv4(), // unique ID
+        id: uuidv4(),
         type: 'single',
         exerciseKey: firstKey,
         sets: 3,
+        reps: 8,
         equipment: exerciseMap[firstKey].equipment[0],
       },
     ])
   }
 
-  // Adds a superset with one exercise initially
+  // Adds a superset with defaults for each exercise
   const addSuperset = () => {
     const firstKey = Object.keys(exerciseMap)[0]
     if (!firstKey) return
@@ -58,12 +59,14 @@ export default function TemplateForm({
             id: uuidv4(),
             type: 'single',
             exerciseKey: firstKey,
+            reps: 8,
             equipment: exerciseMap[firstKey].equipment[0],
           },
           {
             id: uuidv4(),
             type: 'single',
             exerciseKey: firstKey,
+            reps: 8,
             equipment: exerciseMap[firstKey].equipment[0],
           },
         ],
@@ -82,7 +85,7 @@ export default function TemplateForm({
               return { ...remaining, rest: e.rest ?? 30 }
             })()
           : {
-              superset: e.exercises.map(({ type, id, ...remaining }) => ({
+              superset: e.exercises.map(({ type, id, rest, ...remaining }) => ({
                 ...remaining,
               })),
               sets: e.sets ?? 3,
@@ -126,8 +129,8 @@ export default function TemplateForm({
         <AnimatePresence>
           {entries.map((entry) => (
             <motion.div
-              key={entry.id} // stable key
-              layout // enables smooth vertical movement
+              key={entry.id}
+              layout
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}

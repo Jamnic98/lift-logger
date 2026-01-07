@@ -53,11 +53,11 @@ export default function ExerciseRow({
 
   // Determine visible fields
   const getVisibleFields = () => {
-    const eq = value.equipment ?? currentExerciseMeta?.equipment?.[0] ?? 'other'
+    const equipment = value.equipment ?? currentExerciseMeta?.equipment?.[0] ?? 'other'
     const key = value.exerciseKey
     const fields: Array<'sets' | 'reps' | 'weight' | 'bandResistance' | 'duration'> = ['sets']
 
-    switch (eq) {
+    switch (equipment) {
       case 'bodyweight':
         if (key.toLowerCase().includes('plank')) fields.push('duration')
         else fields.push('reps')
@@ -70,6 +70,9 @@ export default function ExerciseRow({
         break
       case 'band':
         fields.push('reps', 'bandResistance')
+        if (value.duration) {
+          onChange({ ...value, duration: undefined, weight: undefined })
+        }
         break
       default:
         fields.push('reps')
@@ -103,7 +106,7 @@ export default function ExerciseRow({
           >
             {Array.from(new Set(Object.values(exerciseMap).map((e) => e.category))).map((c) => (
               <option key={c} value={c}>
-                {c}
+                {c.charAt(0).toUpperCase() + c.slice(1)}
               </option>
             ))}
           </select>
@@ -135,17 +138,21 @@ export default function ExerciseRow({
         {/* Equipment */}
         <div className="flex flex-col w-35">
           <label>Equipment</label>
-          <select
-            value={value.equipment}
-            onChange={(e) => onChange({ ...value, equipment: e.target.value as Equipment })}
-            className="w-full"
-          >
-            {currentExerciseMeta?.equipment.map((eq) => (
-              <option key={eq} value={eq}>
-                {eq}
-              </option>
-            ))}
-          </select>
+          {currentExerciseMeta?.equipment.length === 1 ? (
+            <span>{currentExerciseMeta.equipment[0]}</span>
+          ) : (
+            <select
+              value={value.equipment}
+              onChange={(e) => onChange({ ...value, equipment: e.target.value as Equipment })}
+              className="w-full"
+            >
+              {currentExerciseMeta?.equipment.map((eq) => (
+                <option key={eq} value={eq}>
+                  {eq}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         {/* Dynamic numeric fields */}
@@ -229,7 +236,7 @@ export default function ExerciseRow({
             <label>Rest (sec)</label>
             <input
               type="number"
-              value={value.rest ?? 30}
+              value={value.rest ?? '30'}
               min={5}
               step={5}
               onChange={(e) => onChange({ ...value, rest: Number(e.target.value) })}

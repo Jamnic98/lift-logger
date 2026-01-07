@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import WorkoutDetail from 'components/WorkoutDetail'
+import { WorkoutDetail } from 'components'
 import { getWorkoutById, getExercises } from 'api'
 import type { ExerciseMap, Workout } from 'types'
 
@@ -36,5 +36,5 @@ export default function WorkoutView() {
   if (loading) return <p>Loading…</p>
   if (!workout) return <p>Workout not found</p>
 
-  return <WorkoutDetail workout={workout} exerciseMap={exerciseMap} hideSubmitButton />
+  return <WorkoutDetail workout={workout} exerciseMap={exerciseMap} variant="view" />
 }

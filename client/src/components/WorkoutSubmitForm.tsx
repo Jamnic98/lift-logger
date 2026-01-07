@@ -1,14 +1,36 @@
 import { Button } from 'components'
-import type { ExerciseMap, TrackedExerciseOrGroupInput } from 'types'
+import type {
+  ExerciseMap,
+  TrackedExerciseInput,
+  TrackedExerciseOrGroupInput,
+  WorkoutFormVariant,
+} from 'types'
+
+const formatDateTime = (date?: Date, full = false) => {
+  if (!date) return '-'
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = String(date.getFullYear()).slice(-2)
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+
+  if (full) {
+    // full date + time (view mode)
+    return `${day}/${month}/${year} ${hours}:${minutes}`
+  } else {
+    // time only (create mode)
+    return `${hours}:${minutes}`
+  }
+}
 
 function getVisibleFields(exercise: { exerciseKey: string; equipment?: string }) {
   const equipment = exercise.equipment
   const exerciseKey = exercise.exerciseKey
-  const fields: Array<'sets' | 'reps' | 'weight' | 'bandResistance' | 'duration' | 'rest'> = [
-    'sets',
-  ]
+  const fields: Array<
+    'sets' | 'reps' | 'weight' | 'bandResistance' | 'duration' | 'rest' | 'equipment'
+  > = ['sets']
 
-  if (!equipment) return [...fields, 'reps', 'rest'] // fallback
+  if (!equipment) return [...fields, 'reps', 'rest']
 
   switch (equipment) {
     case 'bodyweight':
@@ -31,8 +53,7 @@ function getVisibleFields(exercise: { exerciseKey: string; equipment?: string })
       break
   }
 
-  fields.push('rest') // always show rest
-
+  fields.push('rest', 'equipment')
   return fields
 }
 
@@ -42,8 +63,8 @@ interface WorkoutSubmitFormProps {
   exerciseMap: ExerciseMap
   startTime: Date
   endTime?: Date
+  variant?: WorkoutFormVariant
   onComplete: () => void
-  hideSubmitButton: boolean
 }
 
 export default function WorkoutSubmitForm({
@@ -52,16 +73,18 @@ export default function WorkoutSubmitForm({
   exerciseMap,
   startTime,
   endTime,
+  variant = 'view',
   onComplete,
-  hideSubmitButton,
 }: WorkoutSubmitFormProps) {
-  const formatTime = (d: Date) => d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  const isView = variant === 'view'
 
   return (
     <div className="p-6 space-y-6 max-w-3xl">
       <h1 className="text-xl font-bold">{name}</h1>
       <p className="mb-4">
-        Started at: {formatTime(startTime)} {endTime ? `- Ended at: ${formatTime(endTime)}` : ''}
+        {isView ? 'Completed on: ' : 'Started at: '}
+        {formatDateTime(startTime, true)}
+        {endTime && ` - ${formatDateTime(endTime, false)}`}
       </p>
 
       <div className="space-y-4">
@@ -71,9 +94,23 @@ export default function WorkoutSubmitForm({
 
           return (
             <div key={eIdx} className="border p-3 space-y-3 rounded-md">
-              {isSuperset && <p className="font-semibold text-lg">Superset</p>}
+              {isSuperset && (
+                <div>
+                  <p className="font-semibold text-lg">Superset</p>
+                  <div>Sets: {entry.sets ?? 1}</div>
+                  <div>Rest: {entry.restAfter ?? 30}s</div>
+                </div>
+              )}
+
               {items.map((ex, exIdx) => {
-                const visibleFields = getVisibleFields(ex)
+                let visibleFields = getVisibleFields(ex)
+                const hideSupersetFields = isSuperset
+
+                // hide 'sets' and 'rest' for sub-exercises
+                if (hideSupersetFields) {
+                  visibleFields = visibleFields.filter((f) => f !== 'sets' && f !== 'rest')
+                }
+
                 return (
                   <div key={exIdx} className="border p-2 rounded">
                     <p className="font-medium text-base">
@@ -81,30 +118,40 @@ export default function WorkoutSubmitForm({
                     </p>
 
                     <div
-                      className={`grid gap-2 font-semibold`}
+                      className="grid gap-2 font-semibold"
                       style={{
                         gridTemplateColumns: `repeat(${visibleFields.length}, minmax(0, 1fr))`,
                       }}
                     >
                       {visibleFields.map((f) => (
-                        <span key={f}>{f}</span>
+                        <span key={f}>{f === 'equipment' ? 'Equipment' : f}</span>
                       ))}
                     </div>
 
                     <div
-                      className={`grid gap-2`}
+                      className="grid gap-2"
                       style={{
                         gridTemplateColumns: `repeat(${visibleFields.length}, minmax(0, 1fr))`,
                       }}
                     >
                       {visibleFields.map((f) => {
-                        if (f === 'sets')
+                        if (hideSupersetFields && (f === 'sets' || f === 'rest')) return null
+
+                        if (f === 'sets') {
+                          const setsCount = Array.isArray(ex.sets) ? ex.sets.length : ex.sets
+                          return <span key={f}>{setsCount}</span>
+                        }
+
+                        if (f === 'rest') return <span key={f}>{ex.rest ?? '30'}</span>
+
+                        if (f === 'equipment')
                           return (
                             <span key={f}>
-                              {Array.isArray(ex.sets) ? ex.sets.length : (ex.sets ?? 1)}
+                              {(ex as TrackedExerciseInput & { equipment?: string }).equipment ??
+                                '-'}
                             </span>
                           )
-                        if (f === 'rest') return <span key={f}>{ex.rest ?? '30s'}</span>
+
                         return <span key={f}>{(ex as any)[f] ?? '-'}</span>
                       })}
                     </div>
@@ -116,7 +163,7 @@ export default function WorkoutSubmitForm({
         })}
       </div>
 
-      {!hideSubmitButton && (
+      {variant === 'create' && (
         <Button onClick={onComplete} className="mt-4">
           Complete & Submit
         </Button>

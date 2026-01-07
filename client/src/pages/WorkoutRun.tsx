@@ -50,6 +50,7 @@ export default function WorkoutRunPage() {
       workout={workout}
       exerciseMap={exerciseMap}
       hideSubmitButton={false}
+      variant="create"
       onComplete={handleSave}
     />
   )

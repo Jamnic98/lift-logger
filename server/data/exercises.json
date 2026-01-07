@@ -1,143 +1,129 @@
 {
   "bicep_curl": {
     "label": "Bicep Curl",
-    "category": "arms",
-    "equipment": ["dumbbell", "barbell", "band"],
+    "category": "isolation",
+    "equipment": ["dumbbell", "barbell"],
     "primary_muscles": ["biceps"],
     "secondary_muscles": []
   },
   "hammer_curl": {
     "label": "Hammer Curl",
-    "category": "arms",
-    "equipment": ["dumbbell", "band"],
+    "category": "isolation",
+    "equipment": ["dumbbell"],
     "primary_muscles": ["biceps", "brachialis"],
     "secondary_muscles": []
   },
   "tricep_extension": {
     "label": "Tricep Extension",
-    "category": "arms",
-    "equipment": ["dumbbell", "band"],
+    "category": "isolation",
+    "equipment": ["dumbbell"],
     "primary_muscles": ["triceps"],
     "secondary_muscles": []
   },
   "overhead_tricep_extension": {
     "label": "Overhead Tricep Extension",
-    "category": "arms",
-    "equipment": ["dumbbell", "band"],
+    "category": "isolation",
+    "equipment": ["dumbbell"],
     "primary_muscles": ["triceps"],
     "secondary_muscles": []
   },
   "tricep_kickback": {
     "label": "Tricep Kickback",
-    "category": "arms",
-    "equipment": ["dumbbell", "band"],
+    "category": "isolation",
+    "equipment": ["dumbbell"],
     "primary_muscles": ["triceps"],
     "secondary_muscles": []
   },
   "push_up_close_grip": {
     "label": "Push-Up (Close Grip / Tricep Focus)",
-    "category": "arms",
+    "category": "push",
     "equipment": ["bodyweight"],
     "primary_muscles": ["triceps"],
     "secondary_muscles": ["chest", "shoulders", "core"]
   },
   "bent_over_dumbbell_row": {
     "label": "Bent-Over Dumbbell Row",
-    "category": "back",
-    "equipment": ["dumbbell", "barbell", "band"],
+    "category": "pull",
+    "equipment": ["dumbbell", "barbell"],
     "primary_muscles": ["lats", "rhomboids"],
     "secondary_muscles": ["biceps", "rear_delts"]
   },
   "single_arm_dumbbell_row": {
     "label": "Single-Arm Dumbbell Row",
-    "category": "back",
+    "category": "pull",
     "equipment": ["dumbbell", "kettlebell"],
     "primary_muscles": ["lats", "rhomboids"],
     "secondary_muscles": ["biceps", "rear_delts"]
   },
   "pull_up": {
     "label": "Pull-Up / Chin-Up",
-    "category": "back",
-    "equipment": ["bodyweight", "band"],
+    "category": "pull",
+    "equipment": ["bodyweight"],
     "primary_muscles": ["lats"],
     "secondary_muscles": ["biceps", "traps"]
   },
   "renegade_row": {
     "label": "Renegade Row",
-    "category": "back",
+    "category": "pull",
     "equipment": ["dumbbell", "kettlebell"],
     "primary_muscles": ["lats", "rhomboids"],
     "secondary_muscles": ["biceps", "core", "shoulders"]
   },
   "bench_press": {
     "label": "Bench Press",
-    "category": "chest",
+    "category": "push",
     "equipment": ["barbell", "dumbbell"],
     "primary_muscles": ["chest"],
     "secondary_muscles": ["triceps", "shoulders"]
   },
   "dumbbell_fly": {
     "label": "Dumbbell Fly",
-    "category": "chest",
-    "equipment": ["dumbbell", "band"],
+    "category": "push",
+    "equipment": ["dumbbell"],
     "primary_muscles": ["chest"],
     "secondary_muscles": ["shoulders"]
   },
   "push_up": {
     "label": "Push-Up",
-    "category": "chest",
-    "equipment": ["bodyweight"],
-    "primary_muscles": ["chest"],
-    "secondary_muscles": ["triceps", "shoulders", "core"]
-  },
-  "incline_push_up": {
-    "label": "Incline Push-Up",
-    "category": "chest",
-    "equipment": ["bodyweight"],
-    "primary_muscles": ["chest"],
-    "secondary_muscles": ["triceps", "shoulders", "core"]
-  },
-  "decline_push_up": {
-    "label": "Decline Push-Up",
-    "category": "chest",
+    "category": "push",
     "equipment": ["bodyweight"],
     "primary_muscles": ["chest"],
     "secondary_muscles": ["triceps", "shoulders", "core"]
   },
   "shoulder_press": {
     "label": "Shoulder Press",
-    "category": "shoulders",
-    "equipment": ["dumbbell", "barbell", "kettlebell"],
+    "category": "push",
+    "equipment": ["dumbbell", "barbell"],
     "primary_muscles": ["deltoids"],
-    "secondary_muscles": ["traps", "triceps"]
+    "secondary_muscles": ["triceps", "traps"]
   },
   "lateral_raise": {
     "label": "Lateral Raise",
-    "category": "shoulders",
-    "equipment": ["dumbbell", "band"],
+    "category": "isolation",
+    "equipment": ["dumbbell"],
     "primary_muscles": ["lateral_delts"],
     "secondary_muscles": []
   },
   "front_raise": {
     "label": "Front Raise",
-    "category": "shoulders",
-    "equipment": ["dumbbell", "band"],
+    "category": "isolation",
+    "equipment": ["dumbbell"],
     "primary_muscles": ["front_delts"],
     "secondary_muscles": []
   },
   "rear_delt_fly": {
     "label": "Rear Delt Fly",
-    "category": "shoulders",
-    "equipment": ["dumbbell", "band"],
+    "category": "isolation",
+    "equipment": ["dumbbell"],
     "primary_muscles": ["rear_delts"],
     "secondary_muscles": ["traps"]
   },
   "arnold_press": {
     "label": "Arnold Press",
-    "category": "shoulders",
+    "category": "push",
     "equipment": ["dumbbell"],
     "primary_muscles": ["deltoids"],
-    "secondary_muscles": ["traps", "triceps"]
+    "secondary_muscles": ["triceps", "traps"]
   },
   "plank": {
     "label": "Plank",
@@ -151,7 +137,7 @@
     "category": "core",
     "equipment": ["bodyweight"],
     "primary_muscles": ["obliques"],
-    "secondary_muscles": ["shoulders", "core"]
+    "secondary_muscles": ["core", "shoulders"]
   },
   "russian_twist": {
     "label": "Russian Twist",
@@ -190,44 +176,58 @@
   },
   "squat": {
     "label": "Squat",
-    "category": "legs",
+    "category": "squat",
     "equipment": ["barbell", "dumbbell", "kettlebell", "bodyweight"],
     "primary_muscles": ["quadriceps", "glutes"],
     "secondary_muscles": ["hamstrings", "calves"]
   },
   "goblet_squat": {
     "label": "Goblet Squat",
-    "category": "legs",
+    "category": "squat",
     "equipment": ["dumbbell", "kettlebell"],
     "primary_muscles": ["quadriceps", "glutes"],
     "secondary_muscles": ["hamstrings", "core"]
   },
   "lunge": {
     "label": "Lunge",
-    "category": "legs",
+    "category": "squat",
     "equipment": ["bodyweight", "dumbbell", "kettlebell"],
     "primary_muscles": ["quadriceps", "glutes"],
     "secondary_muscles": ["hamstrings"]
   },
   "reverse_lunge": {
     "label": "Reverse Lunge",
-    "category": "legs",
+    "category": "squat",
     "equipment": ["bodyweight", "dumbbell", "kettlebell"],
     "primary_muscles": ["quadriceps", "glutes"],
     "secondary_muscles": ["hamstrings"]
   },
   "calf_raise": {
     "label": "Calf Raise",
-    "category": "legs",
+    "category": "isolation",
     "equipment": ["bodyweight", "dumbbell", "kettlebell"],
     "primary_muscles": ["calves"],
     "secondary_muscles": []
   },
   "clamshell": {
     "label": "Clamshell",
-    "category": "legs",
+    "category": "isolation",
     "equipment": ["band", "bodyweight"],
     "primary_muscles": ["glutes"],
     "secondary_muscles": ["hips"]
+  },
+  "swing": {
+    "label": "Swing",
+    "category": "hinge",
+    "equipment": ["dumbbell", "kettlebell"],
+    "primary_muscles": ["glutes", "hamstrings"],
+    "secondary_muscles": ["core", "lower_back"]
+  },
+  "dumbbell_shrug": {
+    "label": "Dumbbell Shrug",
+    "category": "isolation",
+    "equipment": ["dumbbell"],
+    "primary_muscles": ["traps"],
+    "secondary_muscles": []
   }
 }

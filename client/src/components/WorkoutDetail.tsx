@@ -1,33 +1,39 @@
 import { WorkoutSubmitForm } from 'components'
-import type { ExerciseMap, TrackedExerciseOrGroupInput, Workout } from 'types'
+import type {
+  ExerciseMap,
+  SetEntryInput,
+  TrackedExerciseOrGroupInput,
+  Workout,
+  WorkoutFormVariant,
+} from 'types'
 
 interface WorkoutDetailProps {
   workout: Workout
   exerciseMap: ExerciseMap
   hideSubmitButton?: boolean
+  variant: WorkoutFormVariant
   onComplete?: (payload: { name: string; exercises: TrackedExerciseOrGroupInput[] }) => void
 }
 
 export default function WorkoutDetail({
   workout,
   exerciseMap,
-  hideSubmitButton = false,
+  variant,
   onComplete,
 }: WorkoutDetailProps) {
-  // Flatten workout exercises for the form
   const entries: TrackedExerciseOrGroupInput[] = workout.exercises.flat().map((e: any) => {
     if (e.superset && Array.isArray(e.superset)) {
       return {
-        superset: e.superset.map((ex: any) => ({
+        superset: e.superset.map((ex: SetEntryInput & { exerciseKey: 'string' }) => ({
           exerciseKey: ex.exerciseKey,
           equipment: ex.equipment,
-          sets: ex.sets,
           reps: ex.reps ?? 0,
           weight: ex.weight,
           duration: ex.duration,
           bandResistance: ex.bandResistance,
         })),
         restAfter: e.restAfter,
+        sets: e.sets,
       }
     } else {
       return {
@@ -50,7 +56,7 @@ export default function WorkoutDetail({
       exerciseMap={exerciseMap}
       startTime={new Date(workout.startTime)}
       endTime={workout.endTime ? new Date(workout.endTime) : undefined}
-      hideSubmitButton={hideSubmitButton}
+      variant={variant}
       onComplete={() => onComplete?.({ name: workout.name ?? '', exercises: entries })}
     />
   )
