@@ -31,14 +31,14 @@ export type TrackedExerciseOrGroupInput = TrackedExerciseInput | TrackedExercise
 export interface WorkoutInput {
   name?: string
   exercises: TrackedExerciseOrGroupInput[]
-  startTime: string | Date
-  endTime?: string | Date
+  startTime: Date
+  endTime?: Date
 }
 
 export interface Workout extends WorkoutInput {
   id: string
-  startTime: string
-  endTime?: string
+  startTime: Date
+  endTime?: Date
 }
 
 export type WorkoutFormVariant = 'create' | 'view' | 'track'

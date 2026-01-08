@@ -36,5 +36,5 @@ export default function WorkoutView() {
   if (loading) return <p>Loading…</p>
   if (!workout) return <p>Workout not found</p>
 
-  return <WorkoutDetail workout={workout} exerciseMap={exerciseMap} variant="view" />
+  return <WorkoutDetail workout={workout} exerciseMap={exerciseMap} />
 }

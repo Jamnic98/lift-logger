@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { WorkoutDetail } from 'components'
+import { WorkoutRunner } from 'components'
 import { getTemplateById, getExercises, createWorkout } from 'api'
-import type { ExerciseMap, TrackedExerciseOrGroupInput } from 'types'
+import type { ExerciseMap } from 'types'
 
 export default function WorkoutRunPage() {
   const navigate = useNavigate()
@@ -21,7 +21,6 @@ export default function WorkoutRunPage() {
 
       setExerciseMap(exercises)
 
-      // Map template to workout-like structure
       setWorkout({
         name: template.name,
         exercises: template.exercises,
@@ -35,23 +34,17 @@ export default function WorkoutRunPage() {
     load()
   }, [templateId])
 
-  const handleSave = async (payload: {
-    name: string
-    exercises: TrackedExerciseOrGroupInput[]
-  }) => {
-    await createWorkout({ ...payload, startTime: new Date() })
+  const handleSave = async () => {
+    await createWorkout({
+      name: workout.name,
+      exercises: workout.exercises,
+      startTime: workout.startTime,
+      endTime: new Date(),
+    })
     navigate('/workouts')
   }
 
   if (loading) return <p>Loading…</p>
 
-  return (
-    <WorkoutDetail
-      workout={workout}
-      exerciseMap={exerciseMap}
-      hideSubmitButton={false}
-      variant="create"
-      onComplete={handleSave}
-    />
-  )
+  return <WorkoutRunner workout={workout} exerciseMap={exerciseMap} onComplete={handleSave} />
 }

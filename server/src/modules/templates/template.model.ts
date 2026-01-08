@@ -32,12 +32,7 @@ export const TemplateExerciseGroupSchema = new Schema(
 const TemplateSchema = new Schema<Template>(
   {
     name: { type: String, required: true, trim: true },
-    exercises: [
-      {
-        type: [Schema.Types.Mixed],
-        default: [],
-      },
-    ],
+    exercises: [],
   },
   { timestamps: true }
 )
