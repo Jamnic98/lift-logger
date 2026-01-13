@@ -4,17 +4,21 @@ import { v4 as uuidv4 } from 'uuid'
 import { Button, ExerciseRow } from 'components'
 import type { DraftSuperset, ExerciseMap } from 'types'
 
-export default function SupersetBlock({
-  value,
-  onChange,
-  onRemove,
-  exerciseMap,
-}: {
+interface SupersetBlockProps {
+  errors: string[]
   value: DraftSuperset
   onChange: (next: DraftSuperset) => void
   onRemove: () => void
   exerciseMap: ExerciseMap
-}) {
+}
+
+export default function SupersetBlock({
+  value,
+  errors,
+  onChange,
+  onRemove,
+  exerciseMap,
+}: SupersetBlockProps) {
   const addExercise = () =>
     onChange({
       ...value,
@@ -87,6 +91,7 @@ export default function SupersetBlock({
             exerciseMap={exerciseMap}
             hideRest
             hideSets
+            errors={errors}
             onChange={(next) =>
               onChange({
                 ...value,

@@ -197,6 +197,7 @@ export default function TemplateForm({
                 <SupersetBlock
                   value={entry}
                   exerciseMap={exerciseMap}
+                  errors={errors[entry.id] ?? []}
                   onChange={(next) =>
                     setEntries((prev) => prev.map((e) => (e.id === entry.id ? next : e)))
                   }
