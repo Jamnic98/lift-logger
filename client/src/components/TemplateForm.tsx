@@ -21,9 +21,11 @@ export default function TemplateForm({
   onSave,
 }: TemplateFormProps) {
   const [name, setName] = useState(initialName)
+
   const [entries, setEntries] = useState<DraftEntry[]>(
     initialEntries.map((e) => ({ ...e, id: uuidv4() }))
   )
+  const [errors, setErrors] = useState<Record<string, string[]>>({})
 
   // Adds a single exercise with defaults
   const addExercise = () => {
@@ -76,6 +78,10 @@ export default function TemplateForm({
 
   // Save template payload
   const saveTemplate = async () => {
+    if (!validateEntries()) {
+      return
+    }
+
     const payload: TemplateInput = {
       name,
       exercises: entries.map((e) =>
@@ -95,6 +101,47 @@ export default function TemplateForm({
     }
 
     await onSave(payload)
+  }
+
+  const validateEntries = (): boolean => {
+    const newErrors: Record<string, string[]> = {}
+
+    entries.forEach((entry) => {
+      const exercises = entry.type === 'single' ? [entry] : entry.exercises
+      exercises.forEach((ex) => {
+        const meta = exerciseMap[ex.exerciseKey]
+        const equipment = ex.equipment ?? meta?.equipment?.[0] ?? 'other'
+        const requiredFields: Array<'sets' | 'reps' | 'weight' | 'duration'> = ['sets']
+
+        switch (equipment) {
+          case 'bodyweight':
+            if (ex.exerciseKey.toLowerCase().includes('plank')) requiredFields.push('duration')
+            else requiredFields.push('reps')
+            break
+          case 'barbell':
+          case 'dumbbell':
+          case 'kettlebell':
+          case 'machine':
+            requiredFields.push('reps', 'weight')
+            break
+          case 'band':
+            requiredFields.push('reps')
+            break
+          default:
+            requiredFields.push('reps')
+        }
+
+        requiredFields.forEach((field) => {
+          if (ex[field] === undefined || ex[field] === null || ex[field] === 0) {
+            if (!newErrors[ex.id]) newErrors[ex.id] = []
+            newErrors[ex.id].push(field)
+          }
+        })
+      })
+    })
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
   }
 
   return (
@@ -140,6 +187,7 @@ export default function TemplateForm({
                 <ExerciseRow
                   value={entry}
                   exerciseMap={exerciseMap}
+                  errors={errors[entry.id] ?? []}
                   onChange={(next) =>
                     setEntries((prev) => prev.map((e) => (e.id === entry.id ? next : e)))
                   }

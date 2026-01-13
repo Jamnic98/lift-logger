@@ -52,3 +52,19 @@ export function getVisibleFields(exercise: { exerciseKey: string; equipment?: st
   fields.push('rest', 'equipment')
   return fields
 }
+
+export const beep = () => {
+  const ctx = new AudioContext()
+  const oscillator = ctx.createOscillator()
+  const gain = ctx.createGain()
+
+  oscillator.type = 'sine'
+  oscillator.frequency.value = 880
+  gain.gain.value = 0.1
+
+  oscillator.connect(gain)
+  gain.connect(ctx.destination)
+
+  oscillator.start()
+  oscillator.stop(ctx.currentTime + 0.2)
+}

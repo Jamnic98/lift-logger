@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { Button } from 'components'
 import type { ExerciseMap, TemplateExerciseInput, WorkoutInput } from 'types'
-import { getVisibleFields } from 'utils/helpers'
+import { beep, getVisibleFields } from 'utils/helpers'
 
 interface Step {
   type: 'exercise' | 'rest'
@@ -20,7 +20,14 @@ export default function WorkoutRunner({ workout, exerciseMap, onComplete }: Work
   const [steps, setSteps] = useState<Step[]>([])
   const [currentStep, setCurrentStep] = useState(0)
   const [timer, setTimer] = useState(0)
+
+  const [exerciseTimer, setExerciseTimer] = useState(0)
+  const [exerciseRunning, setExerciseRunning] = useState(false)
+  const exerciseTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
   const [stopwatch, setStopwatch] = useState(0)
+  const currentStepRef = useRef(0)
+
   const timerRef = useRef<ReturnType<typeof setInterval>>(0)
   const stopwatchRef = useRef<ReturnType<typeof setInterval>>(0)
 
@@ -51,6 +58,16 @@ export default function WorkoutRunner({ workout, exerciseMap, onComplete }: Work
     return () => clearInterval(stopwatchRef.current!)
   }, [])
 
+  useEffect(() => {
+    currentStepRef.current = currentStep
+  }, [currentStep])
+
+  useEffect(() => {
+    clearInterval(exerciseTimerRef.current!)
+    setExerciseRunning(false)
+    setExerciseTimer(0)
+  }, [currentStep])
+
   // Handle timers
   useEffect(() => {
     const step = steps[currentStep]
@@ -58,23 +75,15 @@ export default function WorkoutRunner({ workout, exerciseMap, onComplete }: Work
 
     clearInterval(timerRef.current!)
 
-    if (
-      step.type === 'rest' ||
-      (step.type === 'exercise' &&
-        step.exercise &&
-        !Array.isArray(step.exercise) &&
-        (step.exercise as any).duration)
-    ) {
-      const duration =
-        step.type === 'rest'
-          ? (step.duration ?? 30)
-          : ((step.exercise as TemplateExerciseInput).duration ?? 30)
+    if (step.type === 'rest') {
+      const duration = step.duration ?? 30
       setTimer(duration)
 
       timerRef.current = setInterval(() => {
         setTimer((t) => {
           if (t <= 1) {
             clearInterval(timerRef.current!)
+            beep()
             nextStep()
             return 0
           }
@@ -90,8 +99,38 @@ export default function WorkoutRunner({ workout, exerciseMap, onComplete }: Work
   }, [currentStep, steps])
 
   const nextStep = () => {
-    if (currentStep < steps.length - 1) setCurrentStep((s) => s + 1)
-    else onComplete()
+    const stepIndex = currentStepRef.current
+
+    if (stepIndex < steps.length - 1) {
+      setCurrentStep(stepIndex + 1)
+    } else {
+      onComplete()
+    }
+  }
+
+  const startExerciseTimer = (duration: number) => {
+    if (exerciseRunning) return
+
+    setExerciseTimer(duration)
+    setExerciseRunning(true)
+
+    exerciseTimerRef.current = setInterval(() => {
+      setExerciseTimer((t) => {
+        if (t <= 1) {
+          clearInterval(exerciseTimerRef.current!)
+          setExerciseRunning(false)
+          beep()
+          nextStep()
+          return 0
+        }
+        return t - 1
+      })
+    }, 1000)
+  }
+
+  const stopExerciseTimer = () => {
+    clearInterval(exerciseTimerRef.current!)
+    setExerciseRunning(false)
   }
 
   if (!steps.length) return <p>Loading workout…</p>
@@ -146,6 +185,7 @@ export default function WorkoutRunner({ workout, exerciseMap, onComplete }: Work
                     <p className="text-sm italic text-gray-500">{ex.equipment}</p>
                   </div>
                 </div>
+
                 <div className="flex flex-wrap gap-4 font-semibold">
                   {fields.map((f) => {
                     const value = (ex as any)[f]
@@ -178,9 +218,24 @@ export default function WorkoutRunner({ workout, exerciseMap, onComplete }: Work
                     }
                   })}
                 </div>
+
+                {ex.duration && (
+                  <div className="mt-4 flex items-center gap-4">
+                    <span className="font-semibold">Timer: {exerciseTimer || ex.duration}s</span>
+
+                    {!exerciseRunning ? (
+                      <Button onClick={() => startExerciseTimer(ex.duration!)}>Start timer</Button>
+                    ) : (
+                      <Button onClick={stopExerciseTimer} variant="danger">
+                        Stop
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
             )
           })}
+
           <div className="flex justify-end mt-4">
             <Button onClick={nextStep}>Complete</Button>
           </div>

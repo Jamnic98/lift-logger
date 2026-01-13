@@ -10,21 +10,25 @@ import {
   BandResistanceEnum,
 } from 'types'
 
+interface ExerciseRowProps {
+  value: DraftExercise
+  hideSets?: boolean
+  hideRest?: boolean
+  errors: string[]
+  onChange: (next: DraftExercise) => void
+  onRemove: () => void
+  exerciseMap: ExerciseMap
+}
+
 export default function ExerciseRow({
   value,
   hideSets = false,
   hideRest = false,
+  errors,
   onChange,
   onRemove,
   exerciseMap,
-}: {
-  value: DraftExercise
-  hideSets?: boolean
-  hideRest?: boolean
-  onChange: (next: DraftExercise) => void
-  onRemove: () => void
-  exerciseMap: ExerciseMap
-}) {
+}: ExerciseRowProps) {
   // Track selected category
   const meta = exerciseMap[value.exerciseKey]
   const defaultCategory = meta?.category ?? Object.values(exerciseMap)[0]?.category ?? ''
@@ -164,8 +168,9 @@ export default function ExerciseRow({
               value={value.sets}
               min={1}
               onChange={(e) => onChange({ ...value, sets: Number(e.target.value) })}
-              className="w-full"
+              className={`w-full ${errors.includes('sets') ? 'border-red-500 border-2' : ''}`}
             />
+            {errors.includes('sets') && <span className="text-red-500 text-xs">Required</span>}
           </div>
         )}
 
@@ -177,8 +182,9 @@ export default function ExerciseRow({
               value={value.reps ?? '8'}
               min={1}
               onChange={(e) => onChange({ ...value, reps: Number(e.target.value) })}
-              className="w-full"
+              className={`w-full ${errors.includes('reps') ? 'border-red-500 border-2' : ''}`}
             />
+            {errors.includes('reps') && <span className="text-red-500 text-xs">Required</span>}
           </div>
         )}
 
@@ -191,8 +197,9 @@ export default function ExerciseRow({
               min={0.5}
               step={0.5}
               onChange={(e) => onChange({ ...value, weight: Number(e.target.value) })}
-              className="w-full"
+              className={`w-full ${errors.includes('weight') ? 'border-red-500 border-2' : ''}`}
             />
+            {errors.includes('weight') && <span className="text-red-500 text-xs">Required</span>}
           </div>
         )}
 
@@ -204,7 +211,7 @@ export default function ExerciseRow({
               onChange={(e) =>
                 onChange({ ...value, bandResistance: e.target.value as BandResistance })
               }
-              className="w-full"
+              className={`w-full ${errors.includes('bandResistance') ? 'border-red-500 border-2' : ''}`}
             >
               <option value="" disabled>
                 Select
@@ -215,6 +222,9 @@ export default function ExerciseRow({
                 </option>
               ))}
             </select>
+            {errors.includes('bandResistance') && (
+              <span className="text-red-500 text-xs">Required</span>
+            )}
           </div>
         )}
 
@@ -226,8 +236,9 @@ export default function ExerciseRow({
               value={value.duration ?? ''}
               min={1}
               onChange={(e) => onChange({ ...value, duration: Number(e.target.value) })}
-              className="w-full"
+              className={`w-full ${errors.includes('duration') ? 'border-red-500 border-2' : ''}`}
             />
+            {errors.includes('duration') && <span className="text-red-500 text-xs">Required</span>}
           </div>
         )}
 
@@ -240,7 +251,6 @@ export default function ExerciseRow({
               min={5}
               step={5}
               onChange={(e) => onChange({ ...value, rest: Number(e.target.value) })}
-              className="w-full"
             />
           </div>
         )}
